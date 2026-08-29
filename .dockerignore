@@ -1,0 +1,12 @@
+node_modules
+.git
+.gitignore
+**/.env
+**/.env.*
+**/.cache
+**/.turbo
+**/dist
+**/build
+**/node_modules
+*.log
+apps/storefront
