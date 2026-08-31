@@ -95,22 +95,37 @@ jobs:
             CHECK_ID=$(aws ssm send-command \
               --instance-ids "$EC2_INSTANCE_ID" \
               --document-name "AWS-RunShellScript" \
-              --parameters 'commands=["docker ps --filter name=medusa --format {{.Image}} {{.Status}}"]' \
+              --parameters 'commands=["tail -20 /home/ubuntu/deploy.log"]' \
               --query "Command.CommandId" \
               --output text)
-            sleep 6
+
+            # wait for the check command itself to finish before reading output
+            for j in $(seq 1 10); do
+              STATUS=$(aws ssm get-command-invocation \
+                --command-id "$CHECK_ID" \
+                --instance-id "$EC2_INSTANCE_ID" \
+                --query "Status" \
+                --output text)
+              if [ "$STATUS" = "Success" ] || [ "$STATUS" = "Failed" ]; then
+                break
+              fi
+              sleep 5
+            done
+
             OUT=$(aws ssm get-command-invocation \
               --command-id "$CHECK_ID" \
               --instance-id "$EC2_INSTANCE_ID" \
               --query "StandardOutputContent" \
               --output text)
             echo "check=$OUT (attempt $i)"
-            if echo "$OUT" | grep -q "$IMAGE" && echo "$OUT" | grep -q "Up"; then
+            if echo "$OUT" | grep -q "=== deployment done ===" && echo "$OUT" | grep -q "$IMAGE" && echo "$OUT" | grep -q "Up"; then
               echo "deployment succeeded"
               exit 0
             fi
-            if echo "$OUT" | grep -q "$IMAGE"; then
-              echo "container on new image but not Up yet: $OUT"
+            if echo "$OUT" | grep -q "ERROR"; then
+              echo "deploy.sh reported an error:"
+              echo "$OUT"
+              exit 1
             fi
           done
           echo "deployment timed out after 60 attempts"
