@@ -3,13 +3,15 @@ import { Suspense } from "react"
 import { listRegions } from "@lib/data/regions"
 import { listLocales } from "@lib/data/locales"
 import { getLocale } from "@lib/data/locale-actions"
+import { getT } from "@i18n/get-t"
 import { StoreRegion } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import CartButton from "@modules/layout/components/cart-button"
 import SideMenu from "@modules/layout/components/side-menu"
 import LocaleSwitcher from "@modules/layout/components/locale-switcher"
 
-export default async function Nav() {
+export default async function Nav({ locale }: { locale: string }) {
+  const { t } = await getT(locale)
   const [regions, locales, currentLocale] = await Promise.all([
     listRegions().then((regions: StoreRegion[]) => regions),
     listLocales(),
@@ -32,7 +34,7 @@ export default async function Nav() {
               className="txt-compact-xlarge-plus hover:text-ui-fg-base uppercase tracking-[0.2em] text-chicya-gold"
               data-testid="nav-store-link"
             >
-              CHICYA
+              {t("common.brand")}
             </LocalizedClientLink>
           </div>
 
@@ -43,14 +45,14 @@ export default async function Nav() {
                 href="/store"
                 data-testid="nav-store-link"
               >
-                Store
+                {t("nav.store")}
               </LocalizedClientLink>
               <LocalizedClientLink
                 className="hover:text-ui-fg-base uppercase tracking-[0.2em] text-xs"
                 href="/story"
                 data-testid="nav-story-link"
               >
-                Story
+                {t("nav.story")}
               </LocalizedClientLink>
               <div className="hidden large:flex items-center h-full">
                 <LocaleSwitcher currentLocale={currentLocale} />
@@ -60,7 +62,7 @@ export default async function Nav() {
                 href="/account"
                 data-testid="nav-account-link"
               >
-                Account
+                {t("nav.account")}
               </LocalizedClientLink>
             </div>
             <Suspense
@@ -70,7 +72,7 @@ export default async function Nav() {
                   href="/cart"
                   data-testid="nav-cart-link"
                 >
-                  Cart (0)
+                  {t("nav.cartCountEmpty")}
                 </LocalizedClientLink>
               }
             >

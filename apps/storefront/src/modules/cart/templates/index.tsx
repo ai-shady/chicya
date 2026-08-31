@@ -8,9 +8,11 @@ import { HttpTypes } from "@medusajs/types"
 const CartTemplate = ({
   cart,
   customer,
+  locale,
 }: {
   cart: HttpTypes.StoreCart | null
   customer: HttpTypes.StoreCustomer | null
+  locale: string
 }) => {
   return (
     <div className="py-12">
@@ -20,11 +22,11 @@ const CartTemplate = ({
             <div className="flex flex-col bg-white py-6 gap-y-6">
               {!customer && (
                 <>
-                  <SignInPrompt />
+                  <SignInPrompt locale={locale} />
                   <Divider />
                 </>
               )}
-              <ItemsTemplate cart={cart} />
+              <ItemsTemplate cart={cart} locale={locale} />
             </div>
             <div className="relative">
               <div className="flex flex-col gap-y-8 sticky top-12">
@@ -40,7 +42,7 @@ const CartTemplate = ({
           </div>
         ) : (
           <div>
-            <EmptyCartMessage />
+            <EmptyCartMessage locale={locale} />
           </div>
         )}
       </div>

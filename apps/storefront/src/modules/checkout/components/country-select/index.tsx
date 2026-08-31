@@ -1,5 +1,8 @@
+"use client"
+
 import { forwardRef, useImperativeHandle, useMemo, useRef } from "react"
 
+import { useT } from "@i18n/use-t"
 import NativeSelect, {
   NativeSelectProps,
 } from "@modules/common/components/native-select"
@@ -10,7 +13,9 @@ const CountrySelect = forwardRef<
   NativeSelectProps & {
     region?: HttpTypes.StoreRegion
   }
->(({ placeholder = "Country", region, defaultValue, ...props }, ref) => {
+>(({ placeholder, region, defaultValue, ...props }, ref) => {
+  const { t } = useT()
+  const resolvedPlaceholder = placeholder ?? t("checkout.country")
   const innerRef = useRef<HTMLSelectElement>(null)
 
   useImperativeHandle<HTMLSelectElement | null, HTMLSelectElement | null>(
@@ -32,7 +37,7 @@ const CountrySelect = forwardRef<
   return (
     <NativeSelect
       ref={innerRef}
-      placeholder={placeholder}
+      placeholder={resolvedPlaceholder}
       defaultValue={defaultValue}
       {...props}
     >

@@ -3,6 +3,7 @@ import Image from "next/image"
 import React from "react"
 
 import PlaceholderImage from "@modules/common/icons/placeholder-image"
+import { useT } from "@i18n/use-t"
 
 type ThumbnailProps = {
   thumbnail?: string | null
@@ -22,6 +23,7 @@ const Thumbnail: React.FC<ThumbnailProps> = ({
   className,
   "data-testid": dataTestid,
 }) => {
+  const { t } = useT()
   const initialImage = thumbnail || images?.[0]?.url
 
   return (
@@ -41,7 +43,7 @@ const Thumbnail: React.FC<ThumbnailProps> = ({
       )}
       data-testid={dataTestid}
     >
-      <ImageOrPlaceholder image={initialImage} size={size} />
+      <ImageOrPlaceholder image={initialImage} size={size} alt={t("product.thumbnailAlt")} />
     </Container>
   )
 }
@@ -49,11 +51,12 @@ const Thumbnail: React.FC<ThumbnailProps> = ({
 const ImageOrPlaceholder = ({
   image,
   size,
-}: Pick<ThumbnailProps, "size"> & { image?: string }) => {
+  alt,
+}: Pick<ThumbnailProps, "size"> & { image?: string; alt: string }) => {
   return image ? (
     <Image
       src={image}
-      alt="Thumbnail"
+      alt={alt}
       className="absolute inset-0 object-cover object-center"
       draggable={false}
       quality={50}

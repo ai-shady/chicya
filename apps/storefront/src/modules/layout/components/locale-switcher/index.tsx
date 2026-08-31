@@ -1,23 +1,22 @@
 "use client"
 
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useTransition } from "react"
 
 import { updateLocale } from "@lib/data/locale-actions"
-
-const LOCALES = [
-  { code: "en-US", label: "EN" },
-  { code: "zh-CN", label: "中文" },
-]
+import { codeToLocalePath, locales } from "@i18n/config"
+import { useT } from "@i18n/use-t"
 
 const LocaleSwitcher = ({ currentLocale }: { currentLocale: string | null }) => {
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
+  const pathname = usePathname()
+  const { t } = useT()
 
   const current =
-    LOCALES.find(
+    locales.find(
       (l) => l.code.toLowerCase() === currentLocale?.toLowerCase()
-    )?.code ?? LOCALES[0].code
+    )?.code ?? locales[0].code
 
   const switchTo = (code: string) => {
     if (code === current || isPending) {
@@ -25,7 +24,9 @@ const LocaleSwitcher = ({ currentLocale }: { currentLocale: string | null }) => 
     }
     startTransition(async () => {
       await updateLocale(code)
-      router.refresh()
+      const segments = pathname.split("/")
+      const rest = segments.length > 3 ? "/" + segments.slice(3).join("/") : ""
+      router.push(`/${segments[1]}/${codeToLocalePath(code)}${rest}`)
     })
   }
 
@@ -34,7 +35,7 @@ const LocaleSwitcher = ({ currentLocale }: { currentLocale: string | null }) => 
       className="flex items-center gap-2 text-xs uppercase tracking-[0.2em]"
       data-testid="locale-switcher"
     >
-      {LOCALES.map((locale, i) => (
+      {locales.map((locale, i) => (
         <span key={locale.code} className="flex items-center gap-2">
           {i > 0 && (
             <span className="text-ui-fg-muted" aria-hidden="true">
@@ -49,7 +50,7 @@ const LocaleSwitcher = ({ currentLocale }: { currentLocale: string | null }) => 
                 ? "text-chicya-gold"
                 : "text-ui-fg-subtle hover:text-ui-fg-base transition-colors"
             }
-            aria-label={`Switch language to ${locale.label}`}
+            aria-label={t("localeSwitcher.switchTo", { language: locale.label })}
           >
             {locale.label}
           </button>

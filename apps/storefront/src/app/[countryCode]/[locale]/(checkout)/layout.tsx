@@ -1,14 +1,20 @@
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import ChevronDown from "@modules/common/icons/chevron-down"
+import HtmlLang from "@modules/layout/components/html-lang"
 import MedusaCTA from "@modules/layout/components/medusa-cta"
 
-export default function CheckoutLayout({
+export default async function CheckoutLayout({
   children,
+  params,
 }: {
   children: React.ReactNode
+  params: Promise<{ countryCode: string; locale: string }>
 }) {
+  const { locale } = await params
+
   return (
     <div className="w-full bg-white relative small:min-h-screen">
+      <HtmlLang />
       <div className="h-16 bg-white border-b ">
         <nav className="flex h-full items-center content-container justify-between">
           <LocalizedClientLink
@@ -36,7 +42,7 @@ export default function CheckoutLayout({
       </div>
       <div className="relative" data-testid="checkout-container">{children}</div>
       <div className="py-4 w-full flex items-center justify-center">
-        <MedusaCTA />
+        <MedusaCTA locale={locale} />
       </div>
     </div>
   )

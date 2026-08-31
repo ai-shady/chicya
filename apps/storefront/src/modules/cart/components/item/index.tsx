@@ -3,6 +3,7 @@
 import { Table, Text, clx } from "@medusajs/ui"
 import { updateLineItem } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
+import { useT } from "@i18n/use-t"
 import CartItemSelect from "@modules/cart/components/cart-item-select"
 import ErrorMessage from "@modules/checkout/components/error-message"
 import DeleteButton from "@modules/common/components/delete-button"
@@ -21,6 +22,7 @@ type ItemProps = {
 }
 
 const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
+  const { t } = useT()
   const [updating, setUpdating] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -122,7 +124,7 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
         >
           {type === "preview" && (
             <span className="flex gap-x-1 ">
-              <Text className="text-ui-fg-muted">{item.quantity}x </Text>
+              <Text className="text-ui-fg-muted">{item.quantity}{t("cart.x")} </Text>
               <LineItemUnitPrice
                 item={item}
                 style="tight"

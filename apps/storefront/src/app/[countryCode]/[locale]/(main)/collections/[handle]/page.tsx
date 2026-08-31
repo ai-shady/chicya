@@ -6,9 +6,11 @@ import { listRegions } from "@lib/data/regions"
 import { StoreCollection, StoreRegion } from "@medusajs/types"
 import CollectionTemplate from "@modules/collections/templates"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
+import { getT } from "@i18n/get-t"
+import { localePaths } from "@i18n/config"
 
 type Props = {
-  params: Promise<{ handle: string; countryCode: string }>
+  params: Promise<{ handle: string; countryCode: string; locale: string }>
   searchParams: Promise<{
     page?: string
     sortBy?: SortOptions
@@ -40,10 +42,13 @@ export async function generateStaticParams() {
 
   const staticParams = countryCodes
     ?.map((countryCode: string) =>
-      collectionHandles.map((handle: string | undefined) => ({
-        countryCode,
-        handle,
-      }))
+      collectionHandles.flatMap((handle: string | undefined) =>
+        localePaths.map((locale) => ({
+          countryCode,
+          locale,
+          handle,
+        }))
+      )
     )
     .flat()
 
@@ -52,6 +57,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const params = await props.params
+  const { t } = await getT(params.locale)
   const collection = await getCollectionByHandle(params.handle)
 
   if (!collection) {
@@ -59,8 +65,8 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   }
 
   const metadata = {
-    title: `${collection.title} | CHICYA`,
-    description: `${collection.title} collection`,
+    title: `${collection.title} | ${t("common.brand")}`,
+    description: t("metadata.collectionsDesc", { title: collection.title }),
   } as Metadata
 
   return metadata

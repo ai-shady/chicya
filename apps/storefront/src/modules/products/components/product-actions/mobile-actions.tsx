@@ -1,3 +1,5 @@
+"use client"
+
 import { Dialog, Transition } from "@headlessui/react"
 import { Button, clx } from "@medusajs/ui"
 import React, { Fragment, useMemo } from "react"
@@ -10,6 +12,7 @@ import { getProductPrice } from "@lib/util/get-product-price"
 import OptionSelect from "./option-select"
 import { HttpTypes } from "@medusajs/types"
 import { isSimpleProduct } from "@lib/util/product"
+import { useT } from "@i18n/use-t"
 
 type MobileActionsProps = {
   product: HttpTypes.StoreProduct
@@ -35,6 +38,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
   optionsDisabled,
 }) => {
   const { state, open, close } = useToggleState()
+  const { t } = useT()
 
   const price = getProductPrice({
     product: product,
@@ -110,8 +114,8 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                 <div className="flex items-center justify-between w-full">
                   <span>
                     {variant
-                      ? Object.values(options).join(" / ")
-                      : "Select Options"}
+                      ? Object.values(options).join(" / ")
+                      : t("product.selectOptions")}
                   </span>
                   <ChevronDown />
                 </div>
@@ -124,10 +128,10 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                 data-testid="mobile-cart-button"
               >
                 {!variant
-                  ? "Select variant"
+                  ? t("product.selectVariant")
                   : !inStock
-                  ? "Out of stock"
-                  : "Add to cart"}
+                  ? t("product.outOfStock")
+                  : t("product.addToCart")}
               </Button>
             </div>
           </div>

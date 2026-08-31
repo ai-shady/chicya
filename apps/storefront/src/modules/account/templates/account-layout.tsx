@@ -4,16 +4,21 @@ import UnderlineLink from "@modules/common/components/interactive-link"
 
 import AccountNav from "../components/account-nav"
 import { HttpTypes } from "@medusajs/types"
+import { getT } from "@i18n/get-t"
 
 interface AccountLayoutProps {
   customer: HttpTypes.StoreCustomer | null
   children: React.ReactNode
+  locale: string
 }
 
 const AccountLayout: React.FC<AccountLayoutProps> = ({
   customer,
   children,
+  locale,
 }) => {
+  const { t } = getT(locale)
+
   return (
     <div className="flex-1 small:py-12" data-testid="account-page">
       <div className="flex-1 content-container h-full max-w-5xl mx-auto bg-white flex flex-col">
@@ -23,15 +28,12 @@ const AccountLayout: React.FC<AccountLayoutProps> = ({
         </div>
         <div className="flex flex-col small:flex-row items-end justify-between small:border-t border-gray-200 py-12 gap-8">
           <div>
-            <h3 className="text-xl-semi mb-4">Got questions?</h3>
-            <span className="txt-medium">
-              You can find frequently asked questions and answers on our
-              customer service page.
-            </span>
+            <h3 className="text-xl-semi mb-4">{t("account.gotQuestions")}</h3>
+            <span className="txt-medium">{t("account.gotQuestionsBody")}</span>
           </div>
           <div>
             <UnderlineLink href="/customer-service">
-              Customer Service
+              {t("account.customerService")}
             </UnderlineLink>
           </div>
         </div>

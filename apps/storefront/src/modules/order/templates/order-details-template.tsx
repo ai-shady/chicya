@@ -2,6 +2,7 @@
 
 import { XMark } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
+import { useT } from "@i18n/use-t"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Help from "@modules/order/components/help"
 import Items from "@modules/order/components/items"
@@ -17,16 +18,18 @@ type OrderDetailsTemplateProps = {
 const OrderDetailsTemplate: React.FC<OrderDetailsTemplateProps> = ({
   order,
 }) => {
+  const { t } = useT()
+
   return (
     <div className="flex flex-col justify-center gap-y-4">
       <div className="flex gap-2 justify-between items-center">
-        <h1 className="text-2xl-semi">Order details</h1>
+        <h1 className="text-2xl-semi">{t("order.orderDetails")}</h1>
         <LocalizedClientLink
           href="/account/orders"
           className="flex gap-2 items-center text-ui-fg-subtle hover:text-ui-fg-base"
           data-testid="back-to-overview-button"
         >
-          <XMark /> Back to overview
+          <XMark /> {t("order.backToOverview")}
         </LocalizedClientLink>
       </div>
       <div

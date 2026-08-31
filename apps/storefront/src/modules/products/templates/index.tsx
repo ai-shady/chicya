@@ -16,6 +16,7 @@ type ProductTemplateProps = {
   product: HttpTypes.StoreProduct
   region: HttpTypes.StoreRegion
   countryCode: string
+  locale: string
   images: HttpTypes.StoreProductImage[]
 }
 
@@ -23,6 +24,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
   product,
   region,
   countryCode,
+  locale,
   images,
 }) => {
   if (!product || !product.id) {
@@ -43,7 +45,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
           <ImageGallery images={images} />
         </div>
         <div className="flex flex-col small:sticky small:top-48 small:py-0 small:max-w-[300px] w-full py-8 gap-y-12">
-          <ProductOnboardingCta />
+          <ProductOnboardingCta locale={locale} />
           <Suspense
             fallback={
               <ProductActions
@@ -62,7 +64,11 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
         data-testid="related-products-container"
       >
         <Suspense fallback={<SkeletonRelatedProducts />}>
-          <RelatedProducts product={product} countryCode={countryCode} />
+          <RelatedProducts
+            product={product}
+            countryCode={countryCode}
+            locale={locale}
+          />
         </Suspense>
       </div>
     </>

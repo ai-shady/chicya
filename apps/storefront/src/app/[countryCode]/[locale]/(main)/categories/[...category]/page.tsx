@@ -6,9 +6,11 @@ import { listRegions } from "@lib/data/regions"
 import { StoreRegion } from "@medusajs/types"
 import CategoryTemplate from "@modules/categories/templates"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
+import { getT } from "@i18n/get-t"
+import { localePaths } from "@i18n/config"
 
 type Props = {
-  params: Promise<{ category: string[]; countryCode: string }>
+  params: Promise<{ category: string[]; countryCode: string; locale: string }>
   searchParams: Promise<{
     sortBy?: SortOptions
     page?: string
@@ -32,10 +34,13 @@ export async function generateStaticParams() {
 
   const staticParams = countryCodes
     ?.map((countryCode: string | undefined) =>
-      categoryHandles.map((handle: any) => ({
-        countryCode,
-        category: [handle],
-      }))
+      categoryHandles.flatMap((handle: any) =>
+        localePaths.map((locale) => ({
+          countryCode,
+          locale,
+          category: [handle],
+        }))
+      )
     )
     .flat()
 
@@ -44,12 +49,14 @@ export async function generateStaticParams() {
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const params = await props.params
+  const { t } = await getT(params.locale)
   try {
     const productCategory = await getCategoryByHandle(params.category)
 
-    const title = productCategory.name + " | CHICYA"
+    const title = productCategory.name + " | " + t("common.brand")
 
-    const description = productCategory.description ?? `${title} category.`
+    const description =
+      productCategory.description ?? t("metadata.categoriesDesc", { title })
 
     return {
       title: `${title}`,

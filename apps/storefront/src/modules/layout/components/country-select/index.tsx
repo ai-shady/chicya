@@ -14,6 +14,7 @@ import { StateType } from "@lib/hooks/use-toggle-state"
 import { useParams, usePathname } from "next/navigation"
 import { updateRegion } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
+import { useT } from "@i18n/use-t"
 
 type CountryOption = {
   country: string
@@ -27,6 +28,7 @@ type CountrySelectProps = {
 }
 
 const CountrySelect = ({ toggleState, regions }: CountrySelectProps) => {
+  const { t } = useT()
   const [current, setCurrent] = useState<
     | { country: string | undefined; region: string; label: string | undefined }
     | undefined
@@ -75,7 +77,7 @@ const CountrySelect = ({ toggleState, regions }: CountrySelectProps) => {
       >
         <ListboxButton className="py-1 w-full">
           <div className="txt-compact-small flex items-start gap-x-2">
-            <span>Shipping to:</span>
+            <span>{t("nav.shippingTo")}</span>
             {current && (
               <span className="txt-compact-small flex items-center gap-x-2">
                 {/* @ts-ignore */}

@@ -5,12 +5,22 @@ import CheckoutForm from "@modules/checkout/templates/checkout-form"
 import CheckoutSummary from "@modules/checkout/templates/checkout-summary"
 import { Metadata } from "next"
 import { notFound } from "next/navigation"
+import { getT } from "@i18n/get-t"
 
-export const metadata: Metadata = {
-  title: "Checkout",
+type Props = {
+  params: Promise<{ countryCode: string; locale: string }>
 }
 
-export default async function Checkout() {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params
+  const { t } = await getT(params.locale)
+  return {
+    title: t("metadata.checkoutTitle"),
+  }
+}
+
+export default async function Checkout(props: Props) {
+  const params = await props.params
   const cart = await retrieveCart()
 
   if (!cart) {
@@ -22,7 +32,7 @@ export default async function Checkout() {
   return (
     <div className="grid grid-cols-1 small:grid-cols-[1fr_416px] content-container gap-x-40 py-12">
       <PaymentWrapper cart={cart}>
-        <CheckoutForm cart={cart} customer={customer} />
+        <CheckoutForm cart={cart} customer={customer} locale={params.locale} />
       </PaymentWrapper>
       <CheckoutSummary cart={cart} />
     </div>

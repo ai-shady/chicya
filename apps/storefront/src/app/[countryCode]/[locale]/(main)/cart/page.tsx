@@ -3,13 +3,23 @@ import { retrieveCustomer } from "@lib/data/customer"
 import CartTemplate from "@modules/cart/templates"
 import { Metadata } from "next"
 import { notFound } from "next/navigation"
+import { getT } from "@i18n/get-t"
 
-export const metadata: Metadata = {
-  title: "Cart",
-  description: "View your cart",
+type Props = {
+  params: Promise<{ countryCode: string; locale: string }>
 }
 
-export default async function Cart() {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params
+  const { t } = await getT(params.locale)
+  return {
+    title: t("metadata.cartTitle"),
+    description: t("metadata.cartDesc"),
+  }
+}
+
+export default async function Cart(props: Props) {
+  const params = await props.params
   const cart = await retrieveCart().catch((error) => {
     console.error(error)
     return notFound()
@@ -17,5 +27,5 @@ export default async function Cart() {
 
   const customer = await retrieveCustomer()
 
-  return <CartTemplate cart={cart} customer={customer} />
+  return <CartTemplate cart={cart} customer={customer} locale={params.locale} />
 }

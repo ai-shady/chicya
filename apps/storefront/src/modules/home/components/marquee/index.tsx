@@ -1,11 +1,9 @@
-const items = [
-  "NEW SEASON DROP LIVE",
-  "10% OFF YOUR FIRST ORDER WITH CODE CHICYA10",
-  "FREE SHIPPING ON ORDERS OVER $100",
-  "BE BOLD. BE CHICYA.",
-]
+import { getT } from "@i18n/get-t"
 
-const Marquee = () => {
+const Marquee = async ({ locale }: { locale: string }) => {
+  const { t, dict } = await getT(locale)
+  const items = dict.home.marquee.items as string[]
+
   const content = (
     <div className="flex shrink-0 items-center">
       {items.map((item, i) => (
@@ -24,7 +22,7 @@ const Marquee = () => {
 
   return (
     <div
-      aria-label="Announcements"
+      aria-label={t("home.marquee.aria")}
       className="w-full overflow-hidden bg-chicya-ink py-4"
     >
       <div className="flex w-max animate-chicya-marquee">

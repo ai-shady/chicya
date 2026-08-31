@@ -14,6 +14,9 @@ import ReactCountryFlag from "react-country-flag"
 import { StateType } from "@lib/hooks/use-toggle-state"
 import { updateLocale } from "@lib/data/locale-actions"
 import { Locale } from "@lib/data/locales"
+import { codeToLocalePath, DEFAULT_LOCALE_PATH } from "@i18n/config"
+import { useT } from "@i18n/use-t"
+import { usePathname } from "next/navigation"
 
 type LanguageOption = {
   code: string
@@ -76,6 +79,8 @@ const LanguageSelect = ({
   const [current, setCurrent] = useState<LanguageOption | undefined>(undefined)
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
+  const pathname = usePathname()
+  const { t } = useT()
 
   const { state, close } = toggleState
 
@@ -90,8 +95,13 @@ const LanguageSelect = ({
       ),
       countryCode: getCountryCodeFromLocale(locale.code),
     }))
-    return [DEFAULT_OPTION, ...localeOptions]
-  }, [locales, currentLocale])
+    const defaultOption = {
+      ...DEFAULT_OPTION,
+      name: t("languageSelect.default"),
+      localizedName: t("languageSelect.default"),
+    }
+    return [defaultOption, ...localeOptions]
+  }, [locales, currentLocale, t])
 
   useEffect(() => {
     if (currentLocale) {
@@ -108,7 +118,13 @@ const LanguageSelect = ({
     startTransition(async () => {
       await updateLocale(option.code)
       close()
-      router.refresh()
+      const segments = pathname.split("/")
+      const rest =
+        segments.length > 3 ? "/" + segments.slice(3).join("/") : ""
+      const localePath = option.code
+        ? codeToLocalePath(option.code)
+        : DEFAULT_LOCALE_PATH
+      router.push(`/${segments[1]}/${localePath}${rest}`)
     })
   }
 
@@ -128,7 +144,7 @@ const LanguageSelect = ({
       >
         <ListboxButton className="py-1 w-full">
           <div className="txt-compact-small flex items-start gap-x-2">
-            <span>Language:</span>
+            <span>{t("languageSelect.language")}</span>
             {current && (
               <span className="txt-compact-small flex items-center gap-x-2">
                 {current.countryCode && (

@@ -4,9 +4,11 @@ import { listProducts } from "@lib/data/products"
 import { getRegion, listRegions } from "@lib/data/regions"
 import ProductTemplate from "@modules/products/templates"
 import { HttpTypes } from "@medusajs/types"
+import { getT } from "@i18n/get-t"
+import { localePaths } from "@i18n/config"
 
 type Props = {
-  params: Promise<{ countryCode: string; handle: string }>
+  params: Promise<{ countryCode: string; locale: string; handle: string }>
   searchParams: Promise<{ v_id?: string }>
 }
 
@@ -36,10 +38,13 @@ export async function generateStaticParams() {
 
     return countryProducts
       .flatMap((countryData) =>
-        countryData.products.map((product) => ({
-          countryCode: countryData.country,
-          handle: product.handle,
-        }))
+        countryData.products.flatMap((product) =>
+          localePaths.map((locale) => ({
+            countryCode: countryData.country,
+            locale,
+            handle: product.handle,
+          }))
+        )
       )
       .filter((param) => param.handle)
   } catch (error) {
@@ -71,7 +76,8 @@ function getImagesForVariant(
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const params = await props.params
-  const { handle } = params
+  const { handle, locale } = params
+  const { t } = await getT(locale)
   const region = await getRegion(params.countryCode)
 
   if (!region) {
@@ -88,10 +94,10 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   }
 
   return {
-    title: `${product.title} | CHICYA`,
+    title: `${product.title} | ${t("common.brand")}`,
     description: `${product.title}`,
     openGraph: {
-      title: `${product.title} | CHICYA`,
+      title: `${product.title} | ${t("common.brand")}`,
       description: `${product.title}`,
       images: product.thumbnail ? [product.thumbnail] : [],
     },
@@ -125,6 +131,7 @@ export default async function ProductPage(props: Props) {
       product={pricedProduct}
       region={region}
       countryCode={params.countryCode}
+      locale={params.locale}
       images={images}
     />
   )

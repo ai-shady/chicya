@@ -1,6 +1,14 @@
 import { HttpTypes } from "@medusajs/types"
 import { NextRequest, NextResponse } from "next/server"
 
+import {
+  DEFAULT_LOCALE_PATH,
+  codeToLocalePath,
+  isValidLocaleCode,
+  isValidLocalePath,
+  localePathToCode,
+} from "@i18n/config"
+
 const BACKEND_URL = process.env.MEDUSA_BACKEND_URL
 const PUBLISHABLE_API_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
 const DEFAULT_REGION = process.env.NEXT_PUBLIC_DEFAULT_REGION || "us"
@@ -101,7 +109,27 @@ async function getCountryCode(
 }
 
 /**
- * Middleware to handle region selection and onboarding status.
+ * Resolves the locale path segment. Priority:
+ * 1. Valid locale path already in the URL
+ * 2. Valid _medusa_locale cookie (mapped to its path)
+ * 3. Default locale path
+ */
+function resolveLocalePath(
+  urlLocalePath: string | undefined,
+  localeCookie: string | undefined
+): string {
+  if (isValidLocalePath(urlLocalePath)) {
+    return urlLocalePath!
+  }
+  if (isValidLocaleCode(localeCookie)) {
+    return codeToLocalePath(localeCookie!)
+  }
+  return DEFAULT_LOCALE_PATH
+}
+
+/**
+ * Middleware to handle region and locale selection.
+ * URL scheme: /{countryCode}/{localePath}/...
  */
 export async function middleware(request: NextRequest) {
   let redirectUrl = request.nextUrl.href
@@ -116,38 +144,67 @@ export async function middleware(request: NextRequest) {
 
   const countryCode = regionMap && (await getCountryCode(request, regionMap))
 
-  const urlHasCountryCode =
-    countryCode && request.nextUrl.pathname.split("/")[1].includes(countryCode)
+  const segments = request.nextUrl.pathname.split("/")
+  const urlCountryCode = segments[1]?.toLowerCase()
+  const urlLocalePath = segments[2]
 
-  // if one of the country codes is in the url and the cache id is set, return next
-  if (urlHasCountryCode && cacheIdCookie) {
-    return NextResponse.next()
-  }
+  const hasValidCountryCode =
+    !!countryCode && urlCountryCode === countryCode
+  const resolvedLocalePath = resolveLocalePath(
+    urlLocalePath,
+    request.cookies.get("_medusa_locale")?.value
+  )
+  const hasValidLocale = isValidLocalePath(urlLocalePath)
 
-  // if one of the country codes is in the url and the cache id is not set, set the cache id and redirect
-  if (urlHasCountryCode && !cacheIdCookie) {
-    response.cookies.set("_medusa_cache_id", cacheId, {
-      maxAge: 60 * 60 * 24,
-    })
-
-    return response
-  }
-
-  // check if the url is a static asset
+  // static asset passthrough
   if (request.nextUrl.pathname.includes(".")) {
     return NextResponse.next()
   }
 
-  const redirectPath =
-    request.nextUrl.pathname === "/" ? "" : request.nextUrl.pathname
-
+  const rest =
+    segments.length > 3 ? "/" + segments.slice(3).join("/") : ""
   const queryString = request.nextUrl.search ? request.nextUrl.search : ""
 
-  // If no country code is set, we redirect to the relevant region.
-  if (!urlHasCountryCode && countryCode) {
-    redirectUrl = `${request.nextUrl.origin}/${countryCode}${redirectPath}${queryString}`
+  // URL is canonical: /{countryCode}/{localePath}/...
+  if (hasValidCountryCode && hasValidLocale) {
+    const localeCode = localePathToCode(urlLocalePath!)
+    const localeCookie = request.cookies.get("_medusa_locale")?.value
+
+    response = NextResponse.next()
+
+    if (!cacheIdCookie) {
+      response.cookies.set("_medusa_cache_id", cacheId, {
+        maxAge: 60 * 60 * 24,
+      })
+    }
+    if (localeCookie !== localeCode) {
+      response.cookies.set("_medusa_locale", localeCode, {
+        maxAge: 60 * 60 * 24 * 365,
+        httpOnly: false,
+        sameSite: "strict",
+      })
+    }
+    return response
+  }
+
+  // Needs redirect: build canonical URL
+  if (countryCode) {
+    const targetPath = `/${countryCode}/${resolvedLocalePath}${rest}`
+    redirectUrl = `${request.nextUrl.origin}${targetPath}${queryString}`
     response = NextResponse.redirect(`${redirectUrl}`, 307)
-  } else if (!urlHasCountryCode && !countryCode) {
+    response.cookies.set("_medusa_cache_id", cacheId, {
+      maxAge: 60 * 60 * 24,
+    })
+    response.cookies.set(
+      "_medusa_locale",
+      localePathToCode(resolvedLocalePath),
+      {
+        maxAge: 60 * 60 * 24 * 365,
+        httpOnly: false,
+        sameSite: "strict",
+      }
+    )
+  } else {
     // Handle case where no valid country code exists (empty regions)
     return new NextResponse(
       "No valid regions configured. Please set up regions with countries in your Medusa Admin.",

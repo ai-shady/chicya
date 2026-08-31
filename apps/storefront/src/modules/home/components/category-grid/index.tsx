@@ -1,49 +1,35 @@
 import { Heading } from "@medusajs/ui"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Reveal from "@modules/home/components/reveal"
+import { getT } from "@i18n/get-t"
 
-const categories = [
-  {
-    name: "Shirts",
-    image:
-      "https://assets.chicya.com/tee-black-front-01M1BG0BQRQ6MQHNBXGVQ1BNH5.png",
-    alt: "Black t-shirt",
-  },
-  {
-    name: "Sweatshirts",
-    image:
-      "https://assets.chicya.com/sweatshirt-vintage-front-01M1BG0CJFS84NWN6X0TY9JHFE.png",
-    alt: "Vintage sweatshirt",
-  },
-  {
-    name: "Pants",
-    image:
-      "https://assets.chicya.com/sweatpants-gray-front-01M1BG0D7K9TVV04GJRX60Y00J.png",
-    alt: "Gray sweatpants",
-  },
-  {
-    name: "Merch",
-    image:
-      "https://assets.chicya.com/shorts-vintage-front-01M1BG0DQ9WPH1PP36JPVNZJ6B.png",
-    alt: "Vintage shorts",
-  },
+const categoryImages = [
+  "https://assets.chicya.com/tee-black-front-01M1BG0BQRQ6MQHNBXGVQ1BNH5.png",
+  "https://assets.chicya.com/sweatshirt-vintage-front-01M1BG0CJFS84NWN6X0TY9JHFE.png",
+  "https://assets.chicya.com/sweatpants-gray-front-01M1BG0D7K9TVV04GJRX60Y00J.png",
+  "https://assets.chicya.com/shorts-vintage-front-01M1BG0DQ9WPH1PP36JPVNZJ6B.png",
 ]
 
-const CategoryGrid = () => {
+const CategoryGrid = async ({ locale }: { locale: string }) => {
+  const { t, dict } = await getT(locale)
+  const categories = (
+    dict.home.categoryGrid.items as { name: string; alt: string }[]
+  ).map((category, i) => ({ ...category, image: categoryImages[i] }))
+
   return (
     <section
-      aria-label="Shop by category"
+      aria-label={t("home.categoryGrid.aria")}
       className="w-full py-16 small:py-24 content-container"
     >
       <Reveal className="flex flex-col items-center text-center mb-12 gap-3">
         <p className="text-xs uppercase tracking-[0.35em] text-chicya-gold">
-          Shop by category
+          {t("home.categoryGrid.eyebrow")}
         </p>
         <Heading
           level="h2"
           className="text-3xl small:text-4xl text-chicya-ink uppercase tracking-[0.15em]"
         >
-          Find your fit
+          {t("home.categoryGrid.title")}
         </Heading>
       </Reveal>
 
@@ -67,7 +53,7 @@ const CategoryGrid = () => {
                     {category.name}
                   </span>
                   <span className="mt-1 inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-white/70 group-hover:text-chicya-gold transition-colors">
-                    Shop the drop <span aria-hidden="true">→</span>
+                    {t("home.categoryGrid.shopTheDrop")} <span aria-hidden="true">→</span>
                   </span>
                 </span>
               </LocalizedClientLink>

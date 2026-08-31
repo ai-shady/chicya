@@ -2,11 +2,7 @@ import { Metadata } from "next"
 
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
 import StoreTemplate from "@modules/store/templates"
-
-export const metadata: Metadata = {
-  title: "Store",
-  description: "Explore all of our products.",
-}
+import { getT } from "@i18n/get-t"
 
 type Params = {
   searchParams: Promise<{
@@ -15,7 +11,17 @@ type Params = {
   }>
   params: Promise<{
     countryCode: string
+    locale: string
   }>
+}
+
+export async function generateMetadata(props: Params): Promise<Metadata> {
+  const params = await props.params
+  const { t } = await getT(params.locale)
+  return {
+    title: t("storePage.metaTitle"),
+    description: t("storePage.metaDesc"),
+  }
 }
 
 export default async function StorePage(props: Params) {
@@ -28,6 +34,7 @@ export default async function StorePage(props: Params) {
       sortBy={sortBy}
       page={page}
       countryCode={params.countryCode}
+      locale={params.locale}
     />
   )
 }

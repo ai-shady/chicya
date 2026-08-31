@@ -1,30 +1,31 @@
 import { Heading } from "@medusajs/ui"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Reveal from "@modules/home/components/reveal"
+import { getT } from "@i18n/get-t"
 
-const banners = [
-  {
-    image: "https://assets.chicya.com/ad3-01M1BG6HKBSZ57TTRGSZ37ASG3.jpg",
-    alt: "Cream knit sweater styling",
-    eyebrow: "New season drop",
-    title: "Soft knits, bold color",
-    cta: "Shop Sweatshirts",
-    href: "/store",
-  },
-  {
-    image: "https://assets.chicya.com/ad5-01M1BG6MET05YDRGX0Y3V941XK.jpg",
-    alt: "Beige knitwear in the city",
-    eyebrow: "Shop the edit",
-    title: "City walks, warm layers",
-    cta: "Shop Shirts",
-    href: "/store",
-  },
+const bannerImages = [
+  "https://assets.chicya.com/ad3-01M1BG6HKBSZ57TTRGSZ37ASG3.jpg",
+  "https://assets.chicya.com/ad5-01M1BG6MET05YDRGX0Y3V941XK.jpg",
 ]
 
-const PromoBanners = () => {
+const PromoBanners = async ({ locale }: { locale: string }) => {
+  const { t, dict } = await getT(locale)
+  const banners = (
+    dict.home.promo.items as {
+      eyebrow: string
+      title: string
+      cta: string
+      alt: string
+    }[]
+  ).map((banner, i) => ({
+    ...banner,
+    image: bannerImages[i],
+    href: "/store",
+  }))
+
   return (
     <section
-      aria-label="Featured promotions"
+      aria-label={t("home.promo.aria")}
       className="w-full pb-16 small:pb-24 content-container"
     >
       <div className="grid grid-cols-1 small:grid-cols-2 gap-x-6 gap-y-6">

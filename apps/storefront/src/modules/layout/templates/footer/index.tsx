@@ -1,11 +1,13 @@
 import { listCategories } from "@lib/data/categories"
 import { listCollections } from "@lib/data/collections"
 import { Text, clx } from "@medusajs/ui"
+import { getT } from "@i18n/get-t"
 
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import MedusaCTA from "@modules/layout/components/medusa-cta"
 
-export default async function Footer() {
+export default async function Footer({ locale }: { locale: string }) {
+  const { t } = await getT(locale)
   const { collections } = await listCollections({
     fields: "*products",
   })
@@ -20,14 +22,14 @@ export default async function Footer() {
               href="/"
               className="txt-compact-xlarge-plus text-ui-fg-subtle hover:text-ui-fg-base uppercase tracking-[0.2em] text-chicya-gold"
             >
-              CHICYA
+              {t("common.brand")}
             </LocalizedClientLink>
           </div>
           <div className="text-small-regular gap-10 md:gap-x-16 grid grid-cols-2 sm:grid-cols-3">
             {productCategories && productCategories?.length > 0 && (
               <div className="flex flex-col gap-y-2">
                 <span className="txt-small-plus txt-ui-fg-base">
-                  Categories
+                  {t("footer.categories")}
                 </span>
                 <ul
                   className="grid grid-cols-1 gap-2"
@@ -85,7 +87,7 @@ export default async function Footer() {
             {collections && collections.length > 0 && (
               <div className="flex flex-col gap-y-2">
                 <span className="txt-small-plus txt-ui-fg-base">
-                  Collections
+                  {t("footer.collections")}
                 </span>
                 <ul
                   className={clx(
@@ -109,14 +111,14 @@ export default async function Footer() {
               </div>
             )}
             <div className="flex flex-col gap-y-2">
-              <span className="txt-small-plus txt-ui-fg-base">CHICYA</span>
+              <span className="txt-small-plus txt-ui-fg-base">{t("common.brand")}</span>
               <ul className="grid grid-cols-1 gap-y-2 text-ui-fg-subtle txt-small">
                 <li>
                   <LocalizedClientLink
                     href="/story"
                     className="hover:text-ui-fg-base"
                   >
-                    Our Story
+                    {t("footer.ourStory")}
                   </LocalizedClientLink>
                 </li>
                 <li>
@@ -124,7 +126,7 @@ export default async function Footer() {
                     href="/account"
                     className="hover:text-ui-fg-base"
                   >
-                    My Account
+                    {t("footer.myAccount")}
                   </LocalizedClientLink>
                 </li>
                 <li>
@@ -132,7 +134,7 @@ export default async function Footer() {
                     href="/cart"
                     className="hover:text-ui-fg-base"
                   >
-                    Shopping Bag
+                    {t("footer.shoppingBag")}
                   </LocalizedClientLink>
                 </li>
                 <li>
@@ -140,7 +142,7 @@ export default async function Footer() {
                     href="mailto:hello@chicya.com"
                     className="hover:text-ui-fg-base"
                   >
-                    Contact Us
+                    {t("footer.contactUs")}
                   </a>
                 </li>
               </ul>
@@ -149,9 +151,9 @@ export default async function Footer() {
         </div>
         <div className="flex w-full mb-16 justify-between text-ui-fg-muted">
           <Text className="txt-compact-small">
-            © {new Date().getFullYear()} CHICYA. All rights reserved.
+            {t("common.copyright", { year: new Date().getFullYear() })}
           </Text>
-          <MedusaCTA />
+          <MedusaCTA locale={locale} />
         </div>
       </div>
     </footer>

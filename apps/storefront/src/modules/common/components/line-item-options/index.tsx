@@ -1,5 +1,6 @@
 import { HttpTypes } from "@medusajs/types"
 import { Text } from "@medusajs/ui"
+import { useT } from "@i18n/use-t"
 
 type LineItemOptionsProps = {
   variant: HttpTypes.StoreProductVariant | undefined
@@ -12,13 +13,15 @@ const LineItemOptions = ({
   "data-testid": dataTestid,
   "data-value": dataValue,
 }: LineItemOptionsProps) => {
+  const { t } = useT()
+
   return (
     <Text
       data-testid={dataTestid}
       data-value={dataValue}
       className="inline-block txt-medium text-ui-fg-subtle w-full overflow-hidden text-ellipsis"
     >
-      Variant: {variant?.title}
+      {t("common.lineItemVariant", { title: variant?.title })}
     </Text>
   )
 }

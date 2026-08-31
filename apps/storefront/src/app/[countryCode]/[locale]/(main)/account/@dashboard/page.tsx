@@ -4,13 +4,23 @@ import Overview from "@modules/account/components/overview"
 import { notFound } from "next/navigation"
 import { retrieveCustomer } from "@lib/data/customer"
 import { listOrders } from "@lib/data/orders"
+import { getT } from "@i18n/get-t"
 
-export const metadata: Metadata = {
-  title: "Account",
-  description: "Overview of your account activity.",
+type Props = {
+  params: Promise<{ countryCode: string; locale: string }>
 }
 
-export default async function OverviewTemplate() {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params
+  const { t } = await getT(params.locale)
+  return {
+    title: t("metadata.accountTitle"),
+    description: t("account.overviewMeta"),
+  }
+}
+
+export default async function OverviewTemplate(props: Props) {
+  const params = await props.params
   const customer = await retrieveCustomer().catch(() => null)
   const orders = (await listOrders().catch(() => null)) || null
 
@@ -18,5 +28,7 @@ export default async function OverviewTemplate() {
     notFound()
   }
 
-  return <Overview customer={customer} orders={orders} />
+  return (
+    <Overview customer={customer} orders={orders} locale={params.locale} />
+  )
 }

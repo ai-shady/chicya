@@ -4,14 +4,18 @@ import { HttpTypes } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import ProductPreview from "@modules/products/components/product-preview"
 import Reveal from "@modules/home/components/reveal"
+import { getT } from "@i18n/get-t"
 
 export default async function FeaturedProducts({
   countryCode,
+  locale,
   region,
 }: {
   countryCode: string
+  locale: string
   region: HttpTypes.StoreRegion
 }) {
+  const { t } = await getT(locale)
   const {
     response: { products },
   } = await listProducts({
@@ -28,18 +32,18 @@ export default async function FeaturedProducts({
 
   return (
     <section
-      aria-label="Featured products"
+      aria-label={t("home.featured.aria")}
       className="w-full py-16 small:py-24 content-container"
     >
       <Reveal className="flex flex-col items-center text-center mb-12 gap-3">
         <p className="text-xs uppercase tracking-[0.35em] text-chicya-gold">
-          Featured
+          {t("home.featured.eyebrow")}
         </p>
         <Heading
           level="h2"
           className="text-3xl small:text-4xl text-chicya-ink uppercase tracking-[0.15em]"
         >
-          The essentials
+          {t("home.featured.title")}
         </Heading>
       </Reveal>
 
@@ -58,7 +62,7 @@ export default async function FeaturedProducts({
           href="/store"
           className="inline-flex items-center gap-3 text-sm uppercase tracking-[0.25em] text-chicya-ink border-b border-chicya-ink pb-1 hover:border-chicya-gold hover:text-chicya-gold transition-colors"
         >
-          View all products <span aria-hidden="true">→</span>
+          {t("home.featured.viewAll")} <span aria-hidden="true">→</span>
         </LocalizedClientLink>
       </Reveal>
     </section>

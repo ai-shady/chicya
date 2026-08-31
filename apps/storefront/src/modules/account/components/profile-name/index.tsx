@@ -6,6 +6,7 @@ import Input from "@modules/common/components/input"
 
 import AccountInfo from "../account-info"
 import { HttpTypes } from "@medusajs/types"
+import { useT } from "@i18n/use-t"
 import { updateCustomer } from "@lib/data/customer"
 
 type MyInformationProps = {
@@ -13,6 +14,7 @@ type MyInformationProps = {
 }
 
 const ProfileName: React.FC<MyInformationProps> = ({ customer }) => {
+  const { t } = useT()
   const [successState, setSuccessState] = React.useState(false)
 
   const updateCustomerName = async (
@@ -48,7 +50,7 @@ const ProfileName: React.FC<MyInformationProps> = ({ customer }) => {
   return (
     <form action={formAction} className="w-full overflow-visible">
       <AccountInfo
-        label="Name"
+        label={t("account.name")}
         currentInfo={`${customer.first_name} ${customer.last_name}`}
         isSuccess={successState}
         isError={!!state?.error}
@@ -57,14 +59,14 @@ const ProfileName: React.FC<MyInformationProps> = ({ customer }) => {
       >
         <div className="grid grid-cols-2 gap-x-4">
           <Input
-            label="First name"
+            label={t("common.firstName")}
             name="first_name"
             required
             defaultValue={customer.first_name ?? ""}
             data-testid="first-name-input"
           />
           <Input
-            label="Last name"
+            label={t("common.lastName")}
             name="last_name"
             required
             defaultValue={customer.last_name ?? ""}

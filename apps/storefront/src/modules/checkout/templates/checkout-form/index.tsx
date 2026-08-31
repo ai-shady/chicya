@@ -9,9 +9,11 @@ import Shipping from "@modules/checkout/components/shipping"
 export default async function CheckoutForm({
   cart,
   customer,
+  locale,
 }: {
   cart: HttpTypes.StoreCart | null
   customer: HttpTypes.StoreCustomer | null
+  locale: string
 }) {
   if (!cart) {
     return null

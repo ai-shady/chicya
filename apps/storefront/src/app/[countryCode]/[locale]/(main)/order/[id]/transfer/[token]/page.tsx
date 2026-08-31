@@ -1,34 +1,31 @@
 import { Heading, Text } from "@medusajs/ui"
 import TransferActions from "@modules/order/components/transfer-actions"
 import TransferImage from "@modules/order/components/transfer-image"
+import { getT } from "@i18n/get-t"
 
-export default async function TransferPage({
-  params,
-}: {
-  params: { id: string; token: string }
+export default async function TransferPage(props: {
+  params: Promise<{ id: string; token: string; locale: string }>
 }) {
-  const { id, token } = params
+  const params = await props.params
+  const { id, token, locale } = params
+  const { t } = await getT(locale)
 
   return (
     <div className="flex flex-col gap-y-4 items-start w-2/5 mx-auto mt-10 mb-20">
       <TransferImage />
       <div className="flex flex-col gap-y-6">
         <Heading level="h1" className="text-xl text-zinc-900">
-          Transfer request for order {id}
+          {t("order.transferRequestFor", { id })}
         </Heading>
         <Text className="text-zinc-600">
-          You&#39;ve received a request to transfer ownership of your order ({id}).
-          If you agree to this request, you can approve the transfer by clicking
-          the button below.
+          {t("order.transferRequestBody1", { id })}
         </Text>
         <div className="w-full h-px bg-zinc-200" />
         <Text className="text-zinc-600">
-          If you accept, the new owner will take over all responsibilities and
-          permissions associated with this order.
+          {t("order.transferRequestBody2")}
         </Text>
         <Text className="text-zinc-600">
-          If you do not recognize this request or wish to retain ownership, no
-          further action is required.
+          {t("order.transferRequestBody3")}
         </Text>
         <div className="w-full h-px bg-zinc-200" />
         <TransferActions id={id} token={token} />

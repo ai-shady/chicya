@@ -9,45 +9,37 @@ import PromoBanners from "@modules/home/components/promo-banners"
 import Story from "@modules/home/components/story"
 import { listCollections } from "@lib/data/collections"
 import { getRegion } from "@lib/data/regions"
+import { getT } from "@i18n/get-t"
 
-export const metadata: Metadata = {
-  title: "CHICYA — Be bold. Be CHICYA.",
-  description:
-    "CHICYA is a bold fashion store. Statement silhouettes, everyday comfort. Be bold. Be CHICYA.",
-  keywords: [
-    "CHICYA",
-    "fashion",
-    "clothing",
-    "streetwear",
-    "sweatshirts",
-    "t-shirts",
-  ],
-  openGraph: {
-    title: "CHICYA — Be bold. Be CHICYA.",
-    description:
-      "CHICYA is a bold fashion store. Statement silhouettes, everyday comfort. Be bold. Be CHICYA.",
-    type: "website",
-  },
-}
+export async function generateMetadata(props: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const params = await props.params
+  const { t } = await getT(params.locale)
 
-const websiteJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "OnlineStore",
-  name: "CHICYA",
-  slogan: "Be bold. Be CHICYA.",
-  url: "https://www.chicya.com",
-  logo: "https://assets.chicya.com/hero-cream-01M1BG6FHH5CQX13956ARDB5SR.jpg",
-  description:
-    "CHICYA is a bold fashion store. Statement silhouettes, everyday comfort.",
-  sameAs: [],
+  const title = t("metadata.homeTitle")
+  const description = t("metadata.homeDesc")
+
+  return {
+    title,
+    description,
+    keywords: ["CHICYA", "fashion", "clothing", "streetwear", "sweatshirts", "t-shirts"],
+    openGraph: {
+      title,
+      description,
+      type: "website",
+    },
+  }
 }
 
 export default async function Home(props: {
-  params: Promise<{ countryCode: string }>
+  params: Promise<{ countryCode: string; locale: string }>
 }) {
   const params = await props.params
 
-  const { countryCode } = params
+  const { countryCode, locale } = params
+
+  const { t } = await getT(locale)
 
   const region = await getRegion(countryCode)
 
@@ -59,20 +51,35 @@ export default async function Home(props: {
     return null
   }
 
+  const websiteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "OnlineStore",
+    name: t("common.brand"),
+    slogan: t("common.tagline"),
+    url: "https://www.chicya.com",
+    logo: "https://assets.chicya.com/hero-cream-01M1BG6FHH5CQX13956ARDB5SR.jpg",
+    description: t("metadata.homeDesc"),
+    sameAs: [],
+  }
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
-      <Hero />
-      <Marquee />
-      <CategoryGrid />
-      <PromoBanners />
+      <Hero locale={locale} />
+      <Marquee locale={locale} />
+      <CategoryGrid locale={locale} />
+      <PromoBanners locale={locale} />
       <div className="py-4">
-        <FeaturedProducts countryCode={countryCode} region={region} />
+        <FeaturedProducts
+          countryCode={countryCode}
+          locale={locale}
+          region={region}
+        />
       </div>
-      <Story />
+      <Story locale={locale} />
       <Newsletter />
     </>
   )

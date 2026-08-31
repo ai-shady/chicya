@@ -1,10 +1,19 @@
 import { Metadata } from "next"
 
 import LoginTemplate from "@modules/account/templates/login-template"
+import { getT } from "@i18n/get-t"
 
-export const metadata: Metadata = {
-  title: "Sign in",
-  description: "Sign in to your CHICYA account.",
+type Props = {
+  params: Promise<{ countryCode: string; locale: string }>
+}
+
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params
+  const { t } = await getT(params.locale)
+  return {
+    title: t("metadata.signinTitle"),
+    description: t("metadata.signinDesc"),
+  }
 }
 
 export default function Login() {

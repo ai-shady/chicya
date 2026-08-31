@@ -1,20 +1,24 @@
 import { Suspense } from "react"
 
+import { getT } from "@i18n/get-t"
 import SkeletonProductGrid from "@modules/skeletons/templates/skeleton-product-grid"
 import RefinementList from "@modules/store/components/refinement-list"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
 
 import PaginatedProducts from "./paginated-products"
 
-const StoreTemplate = ({
+const StoreTemplate = async ({
   sortBy,
   page,
   countryCode,
+  locale,
 }: {
   sortBy?: SortOptions
   page?: string
   countryCode: string
+  locale: string
 }) => {
+  const { t } = await getT(locale)
   const pageNumber = page ? parseInt(page) : 1
   const sort = sortBy || "created_at"
 
@@ -23,16 +27,16 @@ const StoreTemplate = ({
       <div className="w-full bg-chicya-cream border-b border-ui-border-base">
         <div className="content-container py-12 small:py-16 flex flex-col items-center text-center gap-3">
           <p className="text-xs uppercase tracking-[0.35em] text-chicya-gold">
-            The full collection
+            {t("storePage.bannerEyebrow")}
           </p>
           <h1
             className="text-3xl small:text-5xl text-chicya-ink uppercase tracking-[0.15em]"
             data-testid="store-page-title"
           >
-            All products
+            {t("storePage.bannerTitle")}
           </h1>
           <p className="text-sm text-chicya-ink/70">
-            Statement silhouettes. Everyday comfort. Be bold. Be CHICYA.
+            {t("storePage.bannerSub")}
           </p>
         </div>
       </div>
