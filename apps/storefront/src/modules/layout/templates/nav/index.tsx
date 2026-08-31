@@ -7,6 +7,7 @@ import { StoreRegion } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import CartButton from "@modules/layout/components/cart-button"
 import SideMenu from "@modules/layout/components/side-menu"
+import LocaleSwitcher from "@modules/layout/components/locale-switcher"
 
 export default async function Nav() {
   const [regions, locales, currentLocale] = await Promise.all([
@@ -51,6 +52,9 @@ export default async function Nav() {
               >
                 Story
               </LocalizedClientLink>
+              <div className="hidden large:flex items-center h-full">
+                <LocaleSwitcher currentLocale={currentLocale} />
+              </div>
               <LocalizedClientLink
                 className="hover:text-ui-fg-base"
                 href="/account"
