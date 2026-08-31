@@ -41,9 +41,7 @@
     },
     "@eslint/eslintrc": {
       "ajv": "^6.12.4"
-    },
-    "react": "19.0.5",
-    "react-dom": "19.0.5"
+    }
   },
   "allowScripts": {
     "@medusajs/telemetry@2.19.0": true,
