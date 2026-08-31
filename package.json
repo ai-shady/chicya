@@ -13,7 +13,9 @@
     "test": "turbo test",
     "backend:seed": "turbo seed --filter=@dtc/backend",
     "backend:dev": "turbo dev --filter=@dtc/backend",
-    "storefront:dev": "turbo dev --filter=@dtc/storefront"
+    "storefront:dev": "turbo dev --filter=@dtc/storefront",
+    "storefront:build": "turbo build --filter=@dtc/storefront",
+    "storefront:deploy": "turbo build --filter=@dtc/storefront && cd apps/storefront && vercel deploy --prod --yes"
   },
   "pnpm": {
     "overrides": {
@@ -39,6 +41,18 @@
     },
     "@eslint/eslintrc": {
       "ajv": "^6.12.4"
-    }
+    },
+    "react": "19.0.5",
+    "react-dom": "19.0.5"
+  },
+  "allowScripts": {
+    "@medusajs/telemetry@2.19.0": true,
+    "@swc/core@1.16.1": true,
+    "esbuild@0.28.2": true,
+    "fsevents@2.3.3": true,
+    "msgpackr-extract@3.0.4": true,
+    "protobufjs@7.6.6": true,
+    "unrs-resolver@1.12.2": true,
+    "sharp@0.34.5": true
   }
 }
