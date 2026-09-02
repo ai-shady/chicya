@@ -24,4 +24,17 @@ docker compose -f "${COMPOSE_FILE}" pull medusa
 docker compose -f "${COMPOSE_FILE}" up -d --no-deps --force-recreate medusa
 
 docker ps --filter "name=^medusa$" --format "{{.Names}} {{.Image}} {{.Status}}"
+
+# Cleanup: drop old medusa-backend images, keep the running one + latest
+RUNNING_IMG=$(docker ps --filter "name=^medusa$" --format "{{.Image}}")
+docker images --format "{{.Repository}}:{{.Tag}}" \
+  | grep "^039314424497.dkr.ecr.us-west-2.amazonaws.com/medusa-backend:" \
+  | while read -r IMG; do
+      if [ "${IMG}" != "${RUNNING_IMG}" ] && [ "${IMG}" != "039314424497.dkr.ecr.us-west-2.amazonaws.com/medusa-backend:latest" ]; then
+        echo "cleanup: removing ${IMG}"
+        docker rmi "${IMG}" 2>/dev/null || true
+      fi
+    done
+docker image prune -f >/dev/null 2>&1 || true
+
 echo "=== deployment done ==="
