@@ -13,6 +13,12 @@ import { useParams, usePathname } from "next/navigation"
 import { updateRegion } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
 import { useT } from "@i18n/use-t"
+import {
+  buildLocale,
+  DEFAULT_LOCALE_CODE,
+  localeToCountryCode,
+  localeToLanguageCode,
+} from "@i18n/config"
 
 type CountryOption = {
   country: string
@@ -26,8 +32,12 @@ type CountrySwitcherProps = {
 
 const CountrySwitcher = ({ regions }: CountrySwitcherProps) => {
   const { t } = useT()
-  const { countryCode } = useParams()
-  const currentPath = usePathname().split(`/${countryCode}`)[1]
+  const params = useParams()
+  const locale =
+    typeof params?.locale === "string" ? params.locale : DEFAULT_LOCALE_CODE
+  const languageCode = localeToLanguageCode(locale)
+  const pathname = usePathname()
+  const rest = pathname.split(`/${locale}`)[1] ?? ""
 
   const options = useMemo<CountryOption[]>(() => {
     return (
@@ -44,10 +54,11 @@ const CountrySwitcher = ({ regions }: CountrySwitcherProps) => {
   }, [regions])
 
   const current =
-    options.find((o) => o.country === countryCode) ?? options[0]
+    options.find((o) => o.country === localeToCountryCode(locale)) ??
+    options[0]
 
   const handleChange = (option: CountryOption) => {
-    updateRegion(option.country, currentPath)
+    updateRegion(buildLocale(languageCode, option.country), rest)
   }
 
   return (

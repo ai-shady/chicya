@@ -15,6 +15,12 @@ import { useParams, usePathname } from "next/navigation"
 import { updateRegion } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
 import { useT } from "@i18n/use-t"
+import {
+  buildLocale,
+  DEFAULT_LOCALE_CODE,
+  localeToCountryCode,
+  localeToLanguageCode,
+} from "@i18n/config"
 
 type CountryOption = {
   country: string
@@ -34,8 +40,12 @@ const CountrySelect = ({ toggleState, regions }: CountrySelectProps) => {
     | undefined
   >(undefined)
 
-  const { countryCode } = useParams()
-  const currentPath = usePathname().split(`/${countryCode}`)[1]
+  const params = useParams()
+  const locale =
+    typeof params?.locale === "string" ? params.locale : DEFAULT_LOCALE_CODE
+  const countryCode = localeToCountryCode(locale)
+  const languageCode = localeToLanguageCode(locale)
+  const currentPath = usePathname().split(`/${locale}`)[1]
 
   const { state, close } = toggleState
 
@@ -60,7 +70,7 @@ const CountrySelect = ({ toggleState, regions }: CountrySelectProps) => {
   }, [options, countryCode])
 
   const handleChange = (option: CountryOption) => {
-    updateRegion(option.country, currentPath)
+    updateRegion(buildLocale(languageCode, option.country), currentPath)
     close()
   }
 

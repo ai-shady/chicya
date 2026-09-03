@@ -1,8 +1,6 @@
 import { Suspense } from "react"
 
 import { listRegions } from "@lib/data/regions"
-import { listLocales } from "@lib/data/locales"
-import { getLocale } from "@lib/data/locale-actions"
 import { getT } from "@i18n/get-t"
 import { StoreRegion } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
@@ -13,11 +11,9 @@ import CountrySwitcher from "@modules/layout/components/country-switcher"
 
 export default async function Nav({ locale }: { locale: string }) {
   const { t } = await getT(locale)
-  const [regions, locales, currentLocale] = await Promise.all([
-    listRegions().then((regions: StoreRegion[]) => regions),
-    listLocales(),
-    getLocale(),
-  ])
+  const regions = await listRegions().then(
+    (regions: StoreRegion[]) => regions
+  )
 
   return (
     <div className="sticky top-0 inset-x-0 z-50 group">
@@ -25,7 +21,7 @@ export default async function Nav({ locale }: { locale: string }) {
         <nav className="content-container txt-xsmall-plus text-ui-fg-subtle flex items-center justify-between w-full h-full text-small-regular">
           <div className="flex-1 basis-0 h-full flex items-center">
             <div className="h-full">
-              <SideMenu regions={regions} locales={locales} currentLocale={currentLocale} />
+              <SideMenu regions={regions} />
             </div>
           </div>
 
@@ -57,7 +53,7 @@ export default async function Nav({ locale }: { locale: string }) {
               </LocalizedClientLink>
               <div className="hidden small:flex items-center gap-x-4 h-full">
                 <CountrySwitcher regions={regions} />
-                <LocaleSwitcher currentLocale={currentLocale} />
+                <LocaleSwitcher currentLocale={locale} />
               </div>
               <LocalizedClientLink
                 className="hover:text-ui-fg-base"

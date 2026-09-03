@@ -12,6 +12,10 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import { HttpTypes } from "@medusajs/types"
 import { signout } from "@lib/data/customer"
 import { useT } from "@i18n/use-t"
+import {
+  DEFAULT_LOCALE_CODE,
+  localeToCountryCode,
+} from "@i18n/config"
 
 const AccountNav = ({
   customer,
@@ -20,16 +24,19 @@ const AccountNav = ({
 }) => {
   const { t } = useT()
   const route = usePathname()
-  const { countryCode } = useParams() as { countryCode: string }
+  const params = useParams()
+  const locale =
+    typeof params?.locale === "string" ? params.locale : DEFAULT_LOCALE_CODE
+  const countryCode = localeToCountryCode(locale)
 
   const handleLogout = async () => {
-    await signout(countryCode)
+    await signout(locale)
   }
 
   return (
     <div>
       <div className="small:hidden" data-testid="mobile-account-nav">
-        {route !== `/${countryCode}/account` ? (
+        {route !== `/${locale}/account` ? (
           <LocalizedClientLink
             href="/account"
             className="flex items-center gap-x-2 text-small-regular py-2"
@@ -184,9 +191,11 @@ const AccountNavLink = ({
   children,
   "data-testid": dataTestId,
 }: AccountNavLinkProps) => {
-  const { countryCode }: { countryCode: string } = useParams()
+  const params = useParams()
+  const locale =
+    typeof params?.locale === "string" ? params.locale : DEFAULT_LOCALE_CODE
 
-  const active = route.split(countryCode)[1] === href
+  const active = route.split(locale)[1] === href
   return (
     <LocalizedClientLink
       href={href}

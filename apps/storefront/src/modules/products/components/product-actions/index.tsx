@@ -13,6 +13,7 @@ import ProductPrice from "../product-price"
 import MobileActions from "./mobile-actions"
 import { useRouter } from "next/navigation"
 import { useT } from "@i18n/use-t"
+import { localeToCountryCode } from "@i18n/config"
 
 type ProductActionsProps = {
   product: HttpTypes.StoreProduct
@@ -40,7 +41,10 @@ export default function ProductActions({
 
   const [options, setOptions] = useState<Record<string, string | undefined>>({})
   const [isAdding, setIsAdding] = useState(false)
-  const countryCode = useParams().countryCode as string
+  const params = useParams()
+  const locale =
+    typeof params?.locale === "string" ? params.locale : "en-US"
+  const countryCode = localeToCountryCode(locale)
 
   // If there is only 1 variant, preselect the options
   useEffect(() => {

@@ -15,6 +15,11 @@ import {
 } from "./cookies"
 import { getRegion } from "./regions"
 import { getLocale } from "@lib/data/locale-actions"
+import {
+  buildLocale,
+  localeToCountryCode,
+  localeToLanguageCode,
+} from "@i18n/config"
 
 /**
  * Retrieves a cart by its ID. If no ID is provided, it will use the cart ID from the cookies.
@@ -412,26 +417,33 @@ export async function placeOrder(cartId?: string) {
     .catch(medusaError)
 
   if (cartRes?.type === "order") {
-    const countryCode =
+    const shippingCountry =
       cartRes.order.shipping_address?.country_code?.toLowerCase()
+    const localeCookie = await getLocale()
+    const locale = buildLocale(
+      localeToLanguageCode(localeCookie),
+      shippingCountry ?? localeToCountryCode(localeCookie)
+    )
 
     const orderCacheTag = await getCacheTag("orders")
     revalidateTag(orderCacheTag)
 
     removeCartId()
-    redirect(`/${countryCode}/order/${cartRes?.order.id}/confirmed`)
+    redirect(`/${locale}/order/${cartRes?.order.id}/confirmed`)
   }
 
   return cartRes.cart
 }
 
 /**
- * Updates the countrycode param and revalidates the regions cache
- * @param regionId
- * @param countryCode
+ * Updates the locale param (BCP 47) and revalidates the regions cache.
+ * The country part of the locale drives the Medusa region (currency).
+ * @param locale
+ * @param currentPath
  */
-export async function updateRegion(countryCode: string, currentPath: string) {
+export async function updateRegion(locale: string, currentPath: string) {
   const cartId = await getCartId()
+  const countryCode = localeToCountryCode(locale)
   const region = await getRegion(countryCode)
 
   if (!region) {
@@ -450,7 +462,7 @@ export async function updateRegion(countryCode: string, currentPath: string) {
   const productsCacheTag = await getCacheTag("products")
   revalidateTag(productsCacheTag)
 
-  redirect(`/${countryCode}${currentPath}`)
+  redirect(`/${locale}${currentPath}`)
 }
 
 export async function listCartOptions() {

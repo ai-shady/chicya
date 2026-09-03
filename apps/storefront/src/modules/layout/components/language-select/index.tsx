@@ -7,76 +7,31 @@ import {
   ListboxOptions,
   Transition,
 } from "@headlessui/react"
-import { Fragment, useEffect, useMemo, useState, useTransition } from "react"
-import { useRouter } from "next/navigation"
-import ReactCountryFlag from "react-country-flag"
+import { Fragment, useState, useTransition } from "react"
+import { useRouter, usePathname, useParams } from "next/navigation"
 
 import { StateType } from "@lib/hooks/use-toggle-state"
 import { updateLocale } from "@lib/data/locale-actions"
-import { Locale } from "@lib/data/locales"
-import { codeToLocalePath, DEFAULT_LOCALE_PATH } from "@i18n/config"
+import {
+  languages,
+  buildLocale,
+  DEFAULT_LOCALE_CODE,
+  localeToCountryCode,
+  localeToLanguageCode,
+} from "@i18n/config"
 import { useT } from "@i18n/use-t"
-import { usePathname } from "next/navigation"
 
 type LanguageOption = {
   code: string
+  label: string
   name: string
-  localizedName: string
-  countryCode: string
-}
-
-const getCountryCodeFromLocale = (localeCode: string): string => {
-  try {
-    const locale = new Intl.Locale(localeCode)
-    if (locale.region) {
-      return locale.region.toUpperCase()
-    }
-    const maximized = locale.maximize()
-    return maximized.region?.toUpperCase() ?? localeCode.toUpperCase()
-  } catch {
-    const parts = localeCode.split(/[-_]/)
-    return parts.length > 1 ? parts[1].toUpperCase() : parts[0].toUpperCase()
-  }
 }
 
 type LanguageSelectProps = {
   toggleState: StateType
-  locales: Locale[]
-  currentLocale: string | null
 }
 
-/**
- * Gets the localized display name for a language code using Intl API.
- * Falls back to the provided name if Intl is unavailable.
- */
-const getLocalizedLanguageName = (
-  code: string,
-  fallbackName: string,
-  displayLocale: string = "en-US"
-): string => {
-  try {
-    const displayNames = new Intl.DisplayNames([displayLocale], {
-      type: "language",
-    })
-    return displayNames.of(code) ?? fallbackName
-  } catch {
-    return fallbackName
-  }
-}
-
-const DEFAULT_OPTION: LanguageOption = {
-  code: "",
-  name: "Default",
-  localizedName: "Default",
-  countryCode: "",
-}
-
-const LanguageSelect = ({
-  toggleState,
-  locales,
-  currentLocale,
-}: LanguageSelectProps) => {
-  const [current, setCurrent] = useState<LanguageOption | undefined>(undefined)
+const LanguageSelect = ({ toggleState }: LanguageSelectProps) => {
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
   const pathname = usePathname()
@@ -84,83 +39,40 @@ const LanguageSelect = ({
 
   const { state, close } = toggleState
 
-  const options = useMemo(() => {
-    const localeOptions = locales.map((locale) => ({
-      code: locale.code,
-      name: locale.name,
-      localizedName: getLocalizedLanguageName(
-        locale.code,
-        locale.name,
-        currentLocale ?? "en-US"
-      ),
-      countryCode: getCountryCodeFromLocale(locale.code),
-    }))
-    const defaultOption = {
-      ...DEFAULT_OPTION,
-      name: t("languageSelect.default"),
-      localizedName: t("languageSelect.default"),
-    }
-    return [defaultOption, ...localeOptions]
-  }, [locales, currentLocale, t])
+  const params = useParams()
+  const currentLocale =
+    typeof params?.locale === "string" ? params.locale : DEFAULT_LOCALE_CODE
+  const currentCountry = localeToCountryCode(currentLocale)
+  const currentLanguage = localeToLanguageCode(currentLocale)
 
-  useEffect(() => {
-    if (currentLocale) {
-      const option = options.find(
-        (o) => o.code.toLowerCase() === currentLocale.toLowerCase()
-      )
-      setCurrent(option ?? DEFAULT_OPTION)
-    } else {
-      setCurrent(DEFAULT_OPTION)
-    }
-  }, [options, currentLocale])
+  const options: LanguageOption[] = languages.map((l) => ({
+    code: l.code,
+    label: l.label,
+    name: l.name,
+  }))
+
+  const current =
+    options.find((o) => o.code === currentLanguage) ?? options[0]
 
   const handleChange = (option: LanguageOption) => {
     startTransition(async () => {
-      await updateLocale(option.code)
+      const newLocale = buildLocale(option.code, currentCountry)
+      await updateLocale(newLocale)
       close()
-      const segments = pathname.split("/")
-      const rest =
-        segments.length > 3 ? "/" + segments.slice(3).join("/") : ""
-      const localePath = option.code
-        ? codeToLocalePath(option.code)
-        : DEFAULT_LOCALE_PATH
-      router.push(`/${segments[1]}/${localePath}${rest}`)
+      const rest = pathname.split(`/${currentLocale}`)[1] ?? ""
+      router.push(`/${newLocale}${rest}`)
     })
   }
 
   return (
     <div>
-      <Listbox
-        as="span"
-        onChange={handleChange}
-        defaultValue={
-          currentLocale
-            ? options.find(
-                (o) => o.code.toLowerCase() === currentLocale.toLowerCase()
-              ) ?? DEFAULT_OPTION
-            : DEFAULT_OPTION
-        }
-        disabled={isPending}
-      >
+      <Listbox as="span" onChange={handleChange} defaultValue={current} disabled={isPending}>
         <ListboxButton className="py-1 w-full">
           <div className="txt-compact-small flex items-start gap-x-2">
             <span>{t("languageSelect.language")}</span>
-            {current && (
-              <span className="txt-compact-small flex items-center gap-x-2">
-                {current.countryCode && (
-                  /* @ts-ignore */
-                  <ReactCountryFlag
-                    svg
-                    style={{
-                      width: "16px",
-                      height: "16px",
-                    }}
-                    countryCode={current.countryCode}
-                  />
-                )}
-                {isPending ? "..." : current.localizedName}
-              </span>
-            )}
+            <span className="txt-compact-small">
+              {isPending ? "..." : current.label}
+            </span>
           </div>
         </ListboxButton>
         <div className="flex relative w-full min-w-[320px]">
@@ -177,24 +89,12 @@ const LanguageSelect = ({
             >
               {options.map((o) => (
                 <ListboxOption
-                  key={o.code || "default"}
+                  key={o.code}
                   value={o}
                   className="py-2 hover:bg-gray-200 px-3 cursor-pointer flex items-center gap-x-2"
                 >
-                  {o.countryCode ? (
-                    /* @ts-ignore */
-                    <ReactCountryFlag
-                      svg
-                      style={{
-                        width: "16px",
-                        height: "16px",
-                      }}
-                      countryCode={o.countryCode}
-                    />
-                  ) : (
-                    <span style={{ width: "16px", height: "16px" }} />
-                  )}
-                  {o.localizedName}
+                  <span style={{ width: "16px", height: "16px" }} />
+                  {o.label}
                 </ListboxOption>
               ))}
             </ListboxOptions>
