@@ -6,7 +6,6 @@ import { StoreRegion } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import CartButton from "@modules/layout/components/cart-button"
 import SideMenu from "@modules/layout/components/side-menu"
-import LocaleSwitcher from "@modules/layout/components/locale-switcher"
 import CountrySwitcher from "@modules/layout/components/country-switcher"
 
 export default async function Nav({ locale }: { locale: string }) {
@@ -53,7 +52,6 @@ export default async function Nav({ locale }: { locale: string }) {
               </LocalizedClientLink>
               <div className="hidden small:flex items-center gap-x-4 h-full">
                 <CountrySwitcher regions={regions} />
-                <LocaleSwitcher currentLocale={locale} />
               </div>
               <LocalizedClientLink
                 className="hover:text-ui-fg-base"

@@ -435,36 +435,6 @@ export async function placeOrder(cartId?: string) {
   return cartRes.cart
 }
 
-/**
- * Updates the locale param (BCP 47) and revalidates the regions cache.
- * The country part of the locale drives the Medusa region (currency).
- * @param locale
- * @param currentPath
- */
-export async function updateRegion(locale: string, currentPath: string) {
-  const cartId = await getCartId()
-  const countryCode = localeToCountryCode(locale)
-  const region = await getRegion(countryCode)
-
-  if (!region) {
-    throw new Error(`Region not found for country code: ${countryCode}`)
-  }
-
-  if (cartId) {
-    await updateCart({ region_id: region.id })
-    const cartCacheTag = await getCacheTag("carts")
-    revalidateTag(cartCacheTag)
-  }
-
-  const regionCacheTag = await getCacheTag("regions")
-  revalidateTag(regionCacheTag)
-
-  const productsCacheTag = await getCacheTag("products")
-  revalidateTag(productsCacheTag)
-
-  redirect(`/${locale}${currentPath}`)
-}
-
 export async function listCartOptions() {
   const cartId = await getCartId()
   const headers = {

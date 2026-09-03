@@ -10,14 +10,12 @@ import { useMemo } from "react"
 import ReactCountryFlag from "react-country-flag"
 
 import { useParams, usePathname } from "next/navigation"
-import { updateRegion } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
 import { useT } from "@i18n/use-t"
 import {
-  buildLocale,
   DEFAULT_LOCALE_CODE,
+  getDefaultLocaleForCountry,
   localeToCountryCode,
-  localeToLanguageCode,
 } from "@i18n/config"
 
 type CountryOption = {
@@ -35,7 +33,6 @@ const CountrySwitcher = ({ regions }: CountrySwitcherProps) => {
   const params = useParams()
   const locale =
     typeof params?.locale === "string" ? params.locale : DEFAULT_LOCALE_CODE
-  const languageCode = localeToLanguageCode(locale)
   const pathname = usePathname()
   const rest = pathname.split(`/${locale}`)[1] ?? ""
 
@@ -58,7 +55,7 @@ const CountrySwitcher = ({ regions }: CountrySwitcherProps) => {
     options[0]
 
   const handleChange = (option: CountryOption) => {
-    updateRegion(buildLocale(languageCode, option.country), rest)
+    window.location.href = `/${getDefaultLocaleForCountry(option.country)}${rest}`
   }
 
   return (

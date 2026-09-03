@@ -53,6 +53,23 @@ export function buildLocale(
   return `${languageCode}-${countryCode.toUpperCase()}`
 }
 
+export function getDefaultLanguageByCountry(
+  countryCode: string | undefined | null
+): string {
+  const code = (countryCode ?? "").toLowerCase()
+  if (code === "cn") return "zh"
+  return DEFAULT_LANGUAGE_CODE
+}
+
+export function getDefaultLocaleForCountry(
+  countryCode: string | undefined | null
+): string {
+  return buildLocale(
+    getDefaultLanguageByCountry(countryCode),
+    countryCode ?? DEFAULT_COUNTRY_CODE
+  )
+}
+
 export function getLanguageByCode(
   code: string | undefined | null
 ): Language | undefined {

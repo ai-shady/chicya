@@ -7,7 +7,6 @@ import { Fragment } from "react"
 
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import CountrySelect from "../country-select"
-import LanguageSelect from "../language-select"
 import { HttpTypes } from "@medusajs/types"
 import { useT } from "@i18n/use-t"
 
@@ -25,7 +24,6 @@ type SideMenuProps = {
 const SideMenu = ({ regions }: SideMenuProps) => {
   const { t } = useT()
   const countryToggleState = useToggleState()
-  const languageToggleState = useToggleState()
 
   return (
     <div className="h-full">
@@ -87,19 +85,6 @@ const SideMenu = ({ regions }: SideMenuProps) => {
                       })}
                     </ul>
                     <div className="flex flex-col gap-y-6">
-                      <div
-                        className="flex justify-between"
-                        onMouseEnter={languageToggleState.open}
-                        onMouseLeave={languageToggleState.close}
-                      >
-                        <LanguageSelect toggleState={languageToggleState} />
-                        <ArrowRightMini
-                          className={clx(
-                            "transition-transform duration-150",
-                            languageToggleState.state ? "-rotate-90" : ""
-                          )}
-                        />
-                      </div>
                       <div
                         className="flex justify-between"
                         onMouseEnter={countryToggleState.open}
