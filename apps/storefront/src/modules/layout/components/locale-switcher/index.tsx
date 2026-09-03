@@ -50,7 +50,7 @@ const LocaleSwitcher = ({ currentLocale }: { currentLocale: string | null }) => 
                 ? "text-chicya-gold"
                 : "text-ui-fg-subtle hover:text-ui-fg-base transition-colors"
             }
-            aria-label={t("localeSwitcher.switchTo", { language: locale.label })}
+            aria-label={t("localeSwitcher.switchTo", { label: locale.label })}
           >
             {locale.label}
           </button>

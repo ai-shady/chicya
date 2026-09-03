@@ -9,6 +9,7 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import CartButton from "@modules/layout/components/cart-button"
 import SideMenu from "@modules/layout/components/side-menu"
 import LocaleSwitcher from "@modules/layout/components/locale-switcher"
+import CountrySwitcher from "@modules/layout/components/country-switcher"
 
 export default async function Nav({ locale }: { locale: string }) {
   const { t } = await getT(locale)
@@ -54,7 +55,8 @@ export default async function Nav({ locale }: { locale: string }) {
               >
                 {t("nav.story")}
               </LocalizedClientLink>
-              <div className="hidden large:flex items-center h-full">
+              <div className="hidden small:flex items-center gap-x-4 h-full">
+                <CountrySwitcher regions={regions} />
                 <LocaleSwitcher currentLocale={currentLocale} />
               </div>
               <LocalizedClientLink
