@@ -26,16 +26,16 @@ const StoreTemplate = async ({
     <div className="flex flex-col w-full">
       <div className="w-full bg-chicya-cream border-b border-ui-border-base">
         <div className="content-container py-12 small:py-16 flex flex-col items-center text-center gap-3">
-          <p className="text-xs uppercase tracking-[0.35em] text-chicya-gold">
+          <p className="text-xs uppercase tracking-[0.35em] text-chicya-gold animate-chicya-hero-kicker">
             {t("storePage.bannerEyebrow")}
           </p>
           <h1
-            className="text-3xl small:text-5xl text-chicya-ink uppercase tracking-[0.15em]"
+            className="text-3xl small:text-5xl text-chicya-ink uppercase tracking-[0.15em] animate-chicya-hero-title"
             data-testid="store-page-title"
           >
             {t("storePage.bannerTitle")}
           </h1>
-          <p className="text-sm text-chicya-ink/70">
+          <p className="text-sm text-chicya-ink/70 animate-chicya-hero-sub">
             {t("storePage.bannerSub")}
           </p>
         </div>

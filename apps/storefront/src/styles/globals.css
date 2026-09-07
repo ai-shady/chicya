@@ -179,3 +179,187 @@
     transition: none;
   }
 }
+
+/* ============================================================
+   Chicya Motion Design System — Clean Premium (Apple-style)
+   Pure CSS / WAAPI. No JS animation dependencies.
+   ============================================================ */
+
+/* ---- Spring-like easing curves ---- */
+:root {
+  --chicya-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --chicya-ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+  --chicya-ease-emphasized: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --chicya-dur-fast: 0.2s;
+  --chicya-dur-base: 0.35s;
+  --chicya-dur-slow: 0.6s;
+}
+
+/* ---- Hero entrance keyframes (server-rendered, run on load) ---- */
+@keyframes chicya-hero-kicker {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes chicya-hero-title {
+  from { opacity: 0; transform: translateY(42px) scale(0.985); filter: blur(6px); }
+  to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+@keyframes chicya-hero-sub {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes chicya-hero-cta {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes chicya-scroll-hint {
+  0% { opacity: 0; transform: translateY(-6px); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(10px); }
+}
+
+.animate-chicya-hero-kicker {
+  animation: chicya-hero-kicker var(--chicya-dur-base) var(--chicya-ease-spring) both;
+}
+.animate-chicya-hero-title {
+  animation: chicya-hero-title 0.85s var(--chicya-ease-smooth) both;
+}
+.animate-chicya-hero-sub {
+  animation: chicya-hero-sub var(--chicya-dur-base) var(--chicya-ease-smooth) both;
+}
+.animate-chicya-hero-cta {
+  animation: chicya-hero-cta var(--chicya-dur-fast) var(--chicya-ease-spring) both;
+}
+.animate-chicya-scroll-hint {
+  animation: chicya-scroll-hint 2.2s var(--chicya-ease-emphasized) infinite;
+}
+
+/* ---- Card hover lift (Apple-style) ---- */
+.chicya-card {
+  transition: transform var(--chicya-dur-base) var(--chicya-ease-spring),
+    box-shadow var(--chicya-dur-base) var(--chicya-ease-smooth),
+    border-color var(--chicya-dur-fast) ease;
+  will-change: transform;
+}
+.chicya-card:hover {
+  transform: translateY(-6px);
+}
+.chicya-card-hover {
+  transition: transform var(--chicya-dur-base) var(--chicya-ease-spring),
+    box-shadow var(--chicya-dur-base) var(--chicya-ease-smooth);
+}
+.chicya-card-hover:hover {
+  transform: translateY(-6px);
+}
+
+/* ---- Image zoom (inside cards) ---- */
+.chicya-zoom {
+  overflow: hidden;
+}
+.chicya-zoom img {
+  transition: transform 0.8s var(--chicya-ease-smooth), opacity 0.4s ease;
+  will-change: transform;
+}
+.chicya-zoom:hover img {
+  transform: scale(1.06);
+}
+
+/* ---- Link underline sweep ---- */
+.chicya-link {
+  position: relative;
+}
+.chicya-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  height: 1.5px;
+  width: 100%;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--chicya-dur-base) var(--chicya-ease-emphasized);
+}
+.chicya-link:hover::after,
+.chicya-link:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* ---- Button shine sweep ---- */
+.chicya-btn-shine {
+  position: relative;
+  overflow: hidden;
+}
+.chicya-btn-shine::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -80%;
+  height: 100%;
+  width: 40%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(255, 255, 255, 0.35),
+    transparent
+  );
+  transform: skewX(-20deg);
+  transition: left 0.6s var(--chicya-ease-emphasized);
+}
+.chicya-btn-shine:hover::before {
+  left: 130%;
+}
+
+/* ---- Section reveal (additive to .chicya-reveal) ---- */
+.chicya-reveal {
+  transition: opacity var(--chicya-dur-slow) var(--chicya-ease-smooth),
+    transform var(--chicya-dur-slow) var(--chicya-ease-smooth);
+}
+
+/* ---- Stagger delay helpers ---- */
+.chicya-delay-1 { transition-delay: 0.08s; }
+.chicya-delay-2 { transition-delay: 0.16s; }
+.chicya-delay-3 { transition-delay: 0.24s; }
+.chicya-delay-4 { transition-delay: 0.32s; }
+.chicya-delay-5 { transition-delay: 0.4s; }
+
+/* ---- Blur header on scroll (applied via CSS only) ---- */
+.chicya-blur-header {
+  backdrop-filter: saturate(180%) blur(16px);
+  -webkit-backdrop-filter: saturate(180%) blur(16px);
+}
+
+/* ---- Soft fade-down for dropdowns / menus ---- */
+.chicya-pop {
+  animation: chicya-hero-kicker var(--chicya-dur-fast) var(--chicya-ease-spring) both;
+  transform-origin: top;
+}
+
+/* ---- Respect reduced motion across the whole system ---- */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --chicya-dur-fast: 0.01s;
+    --chicya-dur-base: 0.01s;
+    --chicya-dur-slow: 0.01s;
+  }
+  .chicya-card,
+  .chicya-card-hover {
+    transform: none !important;
+    transition: none;
+  }
+  .chicya-zoom img {
+    transform: none !important;
+  }
+  .chicya-btn-shine::before {
+    display: none;
+  }
+  .animate-chicya-hero-kicker,
+  .animate-chicya-hero-title,
+  .animate-chicya-hero-sub,
+  .animate-chicya-hero-cta,
+  .animate-chicya-scroll-hint {
+    animation: none;
+    opacity: 1;
+  }
+}

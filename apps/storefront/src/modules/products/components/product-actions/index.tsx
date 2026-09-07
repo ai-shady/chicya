@@ -178,7 +178,7 @@ export default function ProductActions({
             !isValidVariant
           }
           variant="primary"
-          className="w-full h-10"
+          className="w-full h-10 chicya-btn-shine"
           isLoading={isAdding}
           data-testid="add-product-button"
         >

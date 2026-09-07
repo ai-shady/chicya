@@ -54,7 +54,7 @@ export default async function Footer({ locale }: { locale: string }) {
                       >
                         <LocalizedClientLink
                           className={clx(
-                            "hover:text-ui-fg-base",
+                            "hover:text-ui-fg-base chicya-link",
                             children && "txt-small-plus"
                           )}
                           href={`/categories/${c.handle}`}
@@ -68,7 +68,7 @@ export default async function Footer({ locale }: { locale: string }) {
                               children.map((child) => (
                                 <li key={child.id}>
                                   <LocalizedClientLink
-                                    className="hover:text-ui-fg-base"
+                                    className="hover:text-ui-fg-base chicya-link"
                                     href={`/categories/${child.handle}`}
                                     data-testid="category-link"
                                   >
@@ -100,7 +100,7 @@ export default async function Footer({ locale }: { locale: string }) {
                   {collections?.slice(0, 6).map((c) => (
                     <li key={c.id}>
                       <LocalizedClientLink
-                        className="hover:text-ui-fg-base"
+                        className="hover:text-ui-fg-base chicya-link"
                         href={`/collections/${c.handle}`}
                       >
                         {c.title}
@@ -116,7 +116,7 @@ export default async function Footer({ locale }: { locale: string }) {
                 <li>
                   <LocalizedClientLink
                     href="/story"
-                    className="hover:text-ui-fg-base"
+                    className="hover:text-ui-fg-base chicya-link"
                   >
                     {t("footer.ourStory")}
                   </LocalizedClientLink>
@@ -124,7 +124,7 @@ export default async function Footer({ locale }: { locale: string }) {
                 <li>
                   <LocalizedClientLink
                     href="/account"
-                    className="hover:text-ui-fg-base"
+                    className="hover:text-ui-fg-base chicya-link"
                   >
                     {t("footer.myAccount")}
                   </LocalizedClientLink>
@@ -132,7 +132,7 @@ export default async function Footer({ locale }: { locale: string }) {
                 <li>
                   <LocalizedClientLink
                     href="/cart"
-                    className="hover:text-ui-fg-base"
+                    className="hover:text-ui-fg-base chicya-link"
                   >
                     {t("footer.shoppingBag")}
                   </LocalizedClientLink>
@@ -140,7 +140,7 @@ export default async function Footer({ locale }: { locale: string }) {
                 <li>
                   <a
                     href="mailto:hello@chicya.com"
-                    className="hover:text-ui-fg-base"
+                    className="hover:text-ui-fg-base chicya-link"
                   >
                     {t("footer.contactUs")}
                   </a>

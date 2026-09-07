@@ -69,12 +69,16 @@ const SideMenu = ({ regions }: SideMenuProps) => {
                       </button>
                     </div>
                     <ul className="flex flex-col gap-6 items-start justify-start">
-                      {SideMenuItems.map(({ key, href }) => {
+                      {SideMenuItems.map(({ key, href }, idx) => {
                         return (
-                          <li key={key}>
+                          <li
+                            key={key}
+                            className="chicya-hero-kicker"
+                            style={{ animationDelay: `${0.05 * (idx + 1)}s` }}
+                          >
                             <LocalizedClientLink
                               href={href}
-                              className="text-3xl leading-10 hover:text-ui-fg-disabled"
+                              className="text-3xl leading-10 hover:text-ui-fg-disabled chicya-link"
                               onClick={close}
                               data-testid={`${key}-link`}
                             >

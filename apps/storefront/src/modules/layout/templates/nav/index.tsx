@@ -16,7 +16,7 @@ export default async function Nav({ locale }: { locale: string }) {
 
   return (
     <div className="sticky top-0 inset-x-0 z-50 group">
-      <header className="relative h-16 mx-auto border-b duration-200 bg-white border-ui-border-base">
+      <header className="relative h-16 mx-auto border-b duration-200 bg-white/80 chicya-blur-header border-ui-border-base">
         <nav className="content-container txt-xsmall-plus text-ui-fg-subtle flex items-center justify-between w-full h-full text-small-regular">
           <div className="flex-1 basis-0 h-full flex items-center">
             <div className="h-full">
@@ -27,7 +27,7 @@ export default async function Nav({ locale }: { locale: string }) {
           <div className="flex items-center h-full">
             <LocalizedClientLink
               href="/"
-              className="txt-compact-xlarge-plus hover:text-ui-fg-base uppercase tracking-[0.2em] text-chicya-gold"
+              className="txt-compact-xlarge-plus hover:text-ui-fg-base uppercase tracking-[0.2em] text-chicya-gold chicya-link"
               data-testid="nav-store-link"
             >
               {t("common.brand")}
@@ -37,14 +37,14 @@ export default async function Nav({ locale }: { locale: string }) {
           <div className="flex items-center gap-x-6 h-full flex-1 basis-0 justify-end">
             <div className="hidden small:flex items-center gap-x-6 h-full">
               <LocalizedClientLink
-                className="hover:text-ui-fg-base uppercase tracking-[0.2em] text-xs"
+                className="hover:text-ui-fg-base uppercase tracking-[0.2em] text-xs chicya-link"
                 href="/store"
                 data-testid="nav-store-link"
               >
                 {t("nav.store")}
               </LocalizedClientLink>
               <LocalizedClientLink
-                className="hover:text-ui-fg-base uppercase tracking-[0.2em] text-xs"
+                className="hover:text-ui-fg-base uppercase tracking-[0.2em] text-xs chicya-link"
                 href="/story"
                 data-testid="nav-story-link"
               >
@@ -54,7 +54,7 @@ export default async function Nav({ locale }: { locale: string }) {
                 <CountrySwitcher regions={regions} />
               </div>
               <LocalizedClientLink
-                className="hover:text-ui-fg-base"
+                className="hover:text-ui-fg-base chicya-link"
                 href="/account"
                 data-testid="nav-account-link"
               >

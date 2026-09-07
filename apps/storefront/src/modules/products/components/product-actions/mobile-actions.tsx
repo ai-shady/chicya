@@ -123,7 +123,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
               <Button
                 onClick={handleAddToCart}
                 disabled={!inStock || !variant}
-                className="w-full"
+                className="w-full chicya-btn-shine"
                 isLoading={isAdding}
                 data-testid="mobile-cart-button"
               >
