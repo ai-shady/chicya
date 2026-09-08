@@ -21,6 +21,19 @@ export MEDUSA_IMAGE_TAG="${IMAGE_TAG}"
 aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 039314424497.dkr.ecr.us-west-2.amazonaws.com
 
 docker compose -f "${COMPOSE_FILE}" pull medusa
+
+# A `medusa` container created outside this compose project (no or mismatched
+# com.docker.compose.project label) blocks `compose up` with a container-name
+# conflict. Remove it so compose recreates the service under the expected project.
+COMPOSE_PROJECT="$(basename "${COMPOSE_DIR}")"
+if [ -n "$(docker ps -aq --filter name=^medusa$)" ]; then
+  OWNER="$(docker inspect -f '{{index .Config.Labels "com.docker.compose.project"}}' medusa 2>/dev/null || true)"
+  if [ -z "${OWNER}" ] || [ "${OWNER}" != "${COMPOSE_PROJECT}" ]; then
+    echo "removing stale medusa container (owner project: '${OWNER:-none}')"
+    docker rm -f medusa
+  fi
+fi
+
 docker compose -f "${COMPOSE_FILE}" up -d --no-deps --force-recreate medusa
 
 docker ps --filter "name=^medusa$" --format "{{.Names}} {{.Image}} {{.Status}}"
