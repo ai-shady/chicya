@@ -74,6 +74,60 @@ jobs:
             --push .
           echo "image=$IMAGE:$IMAGE_TAG" >> "$GITHUB_ENV"
 
+      - name: Clean up old ECR images
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+          RETENTION: 5
+        run: |
+          python3 - "${{ env.ECR_REPOSITORY }}" "${{ env.AWS_REGION }}" "${{ env.IMAGE_TAG }}" "$RETENTION" <<'EOF'
+          import json, subprocess, sys
+
+          repo, region, this_tag, retention = sys.argv[1], sys.argv[2], sys.argv[3], int(sys.argv[4])
+
+          # Keep: `latest` tag, this run's SHA tag, and the RETENTION most recent
+          # tagged images (by push date). Delete everything else, including the
+          # untagged layers left behind by `--push`.
+          out = subprocess.run(
+              ["aws", "ecr", "describe-images", "--repository-name", repo,
+               "--region", region,
+               "--query", "sort_by(imageDetails,&imagePushedAt)[*].{tags:imageTags,digest:imageDigest}",
+               "--output", "json"],
+              capture_output=True, text=True, check=True,
+          ).stdout
+          images = json.loads(out)
+
+          keep = set()
+          tagged_keep = 0
+          to_delete = []
+
+          for img in reversed(images):  # newest -> oldest
+              tags = img.get("tags") or []
+              digest = img["digest"]
+              if ("latest" in tags) or (this_tag in tags):
+                  keep.add(digest)
+                  continue
+              if tags and tagged_keep < retention:
+                  tagged_keep += 1
+                  keep.add(digest)
+                  continue
+              to_delete.append({"imageDigest": digest})
+
+          print(f"keeping {len(keep)} images, deleting {len(to_delete)}")
+          if not to_delete:
+              sys.exit(0)
+
+          for i in range(0, len(to_delete), 100):
+              batch = json.dumps(to_delete[i:i + 100])
+              res = subprocess.run(
+                  ["aws", "ecr", "batch-delete-image", "--repository-name", repo,
+                   "--region", region, "--image-ids", batch, "--output", "json"],
+                  capture_output=True, text=True,
+              )
+              print(res.stdout or res.stderr)
+              if res.returncode != 0:
+                  sys.exit(res.returncode)
+          EOF
+
       - name: Deploy via SSM Run Command
         env:
           IMAGE_TAG: ${{ github.sha }}
