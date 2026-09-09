@@ -22,6 +22,14 @@ aws ecr get-login-password --region us-west-2 | docker login --username AWS --pa
 
 docker compose -f "${COMPOSE_FILE}" pull medusa
 
+# Apply pending database migrations from the newly pulled image before swapping
+# containers, so a failed migration leaves the currently running server up.
+echo "=== running db:migrate ==="
+docker run --rm \
+  --env-file /home/ubuntu/medusa-prod.env \
+  "${IMAGE}" \
+  node /app/node_modules/.bin/medusa db:migrate
+
 # A `medusa` container created outside this compose project (no or mismatched
 # com.docker.compose.project label) blocks `compose up` with a container-name
 # conflict. Remove it so compose recreates the service under the expected project.

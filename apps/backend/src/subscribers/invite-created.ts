@@ -37,7 +37,7 @@ export default async function inviteCreatedHandler({
 
   await promiseAll(
     invites.map(async (invite: any) => {
-      const inviteLink = `${adminUrl}/invite?token=${invite.token}`
+      const inviteLink = `${adminUrl}/app/invite?token=${invite.token}`
 
       try {
         await notificationService.createNotifications({

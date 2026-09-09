@@ -23,8 +23,24 @@ export default async function resetPasswordTokenHandler({
     return
   }
 
-  const adminUrl = process.env.ADMIN_URL ?? "https://medusa.chicya.com"
-  const resetUrl = `${adminUrl}/app/reset-password?token=${token}&email=${email}`
+  const isCustomer = actorType === "customer"
+
+  let resetUrl: string
+  if (isCustomer) {
+    const storeUrl = process.env.STORE_URL
+
+    if (!storeUrl) {
+      logger.warn(
+        `Customer password reset requested for ${email}, but STORE_URL is not set; skipping email.`
+      )
+      return
+    }
+
+    resetUrl = `${storeUrl}/reset-password?token=${token}&email=${email}`
+  } else {
+    const adminUrl = process.env.ADMIN_URL ?? "https://medusa.chicya.com"
+    resetUrl = `${adminUrl}/app/reset-password?token=${token}&email=${email}`
+  }
 
   try {
     await notificationService.createNotifications({
