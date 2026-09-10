@@ -13,6 +13,7 @@ const creatorProfileCompiledPath = path.join(
   projectDir,
   ".medusa/server/src/modules/creator-profile"
 )
+const isMedusaBuild = process.argv.includes("build")
 
 const notificationProviders: {
   resolve: string
@@ -87,7 +88,7 @@ const modules = {
       }
     : {}),
   creatorProfile: {
-    resolve: fs.existsSync(creatorProfileSourcePath)
+    resolve: isMedusaBuild && fs.existsSync(creatorProfileSourcePath)
       ? creatorProfileSourcePath
       : creatorProfileCompiledPath,
   },
