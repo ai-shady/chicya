@@ -1,9 +1,18 @@
 import { loadEnv, defineConfig, Modules } from '@medusajs/framework/utils'
+import fs from 'fs'
 import path from 'path'
 
 loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 
 const projectDir = process.cwd()
+const creatorProfileSourcePath = path.join(
+  projectDir,
+  "src/modules/creator-profile"
+)
+const creatorProfileCompiledPath = path.join(
+  projectDir,
+  ".medusa/server/src/modules/creator-profile"
+)
 
 const notificationProviders: {
   resolve: string
@@ -78,10 +87,9 @@ const modules = {
       }
     : {}),
   creatorProfile: {
-    resolve: path.join(
-      projectDir,
-      ".medusa/server/src/modules/creator-profile"
-    ),
+    resolve: fs.existsSync(creatorProfileSourcePath)
+      ? creatorProfileSourcePath
+      : creatorProfileCompiledPath,
   },
 }
 
