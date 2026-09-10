@@ -78,7 +78,10 @@ const modules = {
       }
     : {}),
   creatorProfile: {
-    resolve: path.join(projectDir, "src/modules/creator-profile"),
+    resolve: path.join(
+      projectDir,
+      ".medusa/server/src/modules/creator-profile"
+    ),
   },
 }
 
