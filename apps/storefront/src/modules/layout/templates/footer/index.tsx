@@ -123,6 +123,14 @@ export default async function Footer({ locale }: { locale: string }) {
                 </li>
                 <li>
                   <LocalizedClientLink
+                    href="/creator"
+                    className="hover:text-ui-fg-base chicya-link"
+                  >
+                    {t("footer.creator")}
+                  </LocalizedClientLink>
+                </li>
+                <li>
+                  <LocalizedClientLink
                     href="/account"
                     className="hover:text-ui-fg-base chicya-link"
                   >

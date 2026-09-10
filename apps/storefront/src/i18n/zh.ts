@@ -46,6 +46,7 @@ const zh: Dictionary = {
   nav: {
     store: "商店",
     story: "品牌故事",
+    creator: "创作者",
     account: "账户",
     cart: "购物车",
     cartCount: "购物车 ({count})",
@@ -59,6 +60,7 @@ const zh: Dictionary = {
     categories: "分类",
     collections: "系列",
     ourStory: "品牌故事",
+    creator: "创作者",
     myAccount: "我的账户",
     shoppingBag: "购物袋",
     contactUs: "联系我们",
@@ -192,6 +194,17 @@ const zh: Dictionary = {
     ctaTitle: "穿出你的风格",
     ctaBody: "探索整个系列，让 CHICYA 成为你的专属——大胆，始于一个选择。",
     ctaBtn: "选购系列",
+  },
+  creatorPage: {
+    metaTitle: "创作者 | CHICYA",
+    metaDesc: "认识 CHICYA 背后的创作者。",
+    eyebrow: "创作者",
+    location: "所在地",
+    company: "所在公司",
+    githubStats: "开源数据",
+    repositories: "个公开仓库",
+    followers: "位关注者",
+    website: "个人网站",
   },
   storePage: {
     metaTitle: "商店",

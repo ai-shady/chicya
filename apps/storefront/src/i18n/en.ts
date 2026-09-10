@@ -46,6 +46,7 @@ const en: Dictionary = {
   nav: {
     store: "Store",
     story: "Story",
+    creator: "Creator",
     account: "Account",
     cart: "Cart",
     cartCount: "Cart ({count})",
@@ -59,6 +60,7 @@ const en: Dictionary = {
     categories: "Categories",
     collections: "Collections",
     ourStory: "Our Story",
+    creator: "Creator",
     myAccount: "My Account",
     shoppingBag: "Shopping Bag",
     contactUs: "Contact Us",
@@ -193,6 +195,17 @@ const en: Dictionary = {
     ctaTitle: "Wear it your way",
     ctaBody: "Explore the collection and make CHICYA your own — bold starts with one choice.",
     ctaBtn: "Shop the collection",
+  },
+  creatorPage: {
+    metaTitle: "Creator | CHICYA",
+    metaDesc: "Meet the creator behind CHICYA.",
+    eyebrow: "The creator",
+    location: "Based in",
+    company: "Works with",
+    githubStats: "Open source",
+    repositories: "repositories",
+    followers: "followers",
+    website: "Website",
   },
   storePage: {
     metaTitle: "Store",

@@ -22,6 +22,8 @@ import {
   linkSalesChannelsToApiKeyWorkflow,
   linkSalesChannelsToStockLocationWorkflow,
 } from "@medusajs/medusa/core-flows";
+import CreatorProfileModuleService from "../modules/creator-profile/service";
+import { CREATOR_PROFILE_MODULE } from "../modules/creator-profile";
 
 export default async function initial_data_seed({
   container,
@@ -34,6 +36,43 @@ export default async function initial_data_seed({
   const fulfillmentModuleService = container.resolve(
     ModuleRegistrationName.FULFILLMENT
   );
+  const creatorProfileService = container.resolve(
+    CREATOR_PROFILE_MODULE
+  ) as CreatorProfileModuleService;
+
+  const existingCreatorProfiles =
+    await creatorProfileService.listCreatorProfiles({});
+
+  if (!existingCreatorProfiles.length) {
+    await creatorProfileService.createCreatorProfiles({
+      slug: "ai-shady",
+      name: "Shady",
+      role: "Senior Full-Stack JS Engineer",
+      bio: "18+ years of JavaScript and 11 years of global e-commerce experience. Building with React, Next.js, Node.js, NestJS, MedusaJS, AWS, and Shopify.",
+      avatar_url: "https://avatars.githubusercontent.com/u/83744265?v=4",
+      location: "Changsha, China",
+      company: "Miracle Miles Group",
+      website_url: "https://www.chicya.com",
+      github_username: "ai-shady",
+      github_url: "https://github.com/ai-shady",
+      public_repos: 73,
+      followers: 19,
+      following: 22,
+      skills: {
+        items: [
+          "JavaScript",
+          "React",
+          "Next.js",
+          "Node.js",
+          "NestJS",
+          "MedusaJS",
+          "AWS",
+          "Shopify",
+        ],
+      },
+      published: true,
+    });
+  }
 
   const countries = ["gb", "de", "dk", "se", "fr", "es", "it"];
 

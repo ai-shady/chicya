@@ -50,6 +50,13 @@ export default async function Nav({ locale }: { locale: string }) {
               >
                 {t("nav.story")}
               </LocalizedClientLink>
+              <LocalizedClientLink
+                className="hover:text-ui-fg-base uppercase tracking-[0.2em] text-xs chicya-link"
+                href="/creator"
+                data-testid="nav-creator-link"
+              >
+                {t("nav.creator")}
+              </LocalizedClientLink>
               <div className="hidden small:flex items-center gap-x-4 h-full">
                 <CountrySwitcher regions={regions} />
               </div>

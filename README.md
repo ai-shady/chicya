@@ -23,16 +23,16 @@ This is a [Turborepo](https://turbo.build) monorepo using npm workspaces.
 - Email notifications via **SES** and **Resend** custom modules, wired to events (e.g. invite-created)
 - Medusa **translation** module + admin dashboard i18n
 - Image storage on **AWS S3** with CDN (`assets.chicya.com`)
+- Creator profile CMS module maintained from the Medusa Admin and rendered at the localized `/creator` storefront route
 - Automated pipelines: backend image build (arm64) → ECR → SSM deploy to EC2; storefront auto-deploy to Vercel
 
 ## Architecture
 
 ```text
 ┌─────────────┐     ┌──────────────────────────┐     ┌─────────────────┐
-│  Vercel     │     │  AWS EC2 (Docker)        │     │  AWS Services   │
-│  Storefront │────▶│  Medusa backend :9000    │────▶│  PostgreSQL     │
-│  Next.js 15 │HTTPS│  + Redis                 │     │  Redis          │
-│             │     │  (docker-compose)        │     │  S3 · SES       │
+│  Vercel     │     │  AWS EC2 (Docker)        │     │  External SaaS   │
+│  Storefront │────▶│  Medusa backend :9000    │────▶│  Neon PostgreSQL │
+│  Next.js 15 │HTTPS│  + Redis                 │     │  Resend · AWS S3 │
 └─────────────┘     └──────────────────────────┘     └─────────────────┘
         ▲                          ▲
         │   GitHub Actions (CI)    │   push to main
@@ -78,17 +78,36 @@ npm run backend:seed
 
 ### Backend (AWS EC2)
 
+The Medusa backend runs in Docker on AWS EC2. Production commerce data is stored in
+Neon PostgreSQL; Redis and S3 remain AWS-managed services where configured.
+
 Pushing to `main` with changes under `apps/backend/`, `deploy/`, or the Dockerfile triggers [deploy-backend.yml](.github/workflows/deploy-backend.yml):
 
 1. `medusa build` on a native arm64 runner
 2. Docker image built via buildx (`linux/arm64`) and pushed to **Amazon ECR** (`:SHA` + `:latest`)
 3. Async **SSM Run Command** on EC2 pulls the image and recreates the `medusa` container with `docker compose`
 
-Infrastructure lives in [`deploy/`](deploy): `docker-compose.yml` (postgres, redis, medusa), `deploy.sh` (pull & recreate), `bootstrap-env.sh` (one-time env setup).
+Infrastructure lives in [`deploy/`](deploy): `docker-compose.yml` (redis and medusa), `deploy.sh` (pull, migrate, and recreate), `bootstrap-env.sh` (one-time env setup).
 
 ### Storefront (Vercel)
 
 Pushing to `main` auto-deploys the storefront to Vercel (root directory `apps/storefront`).
+
+### Database (Neon)
+
+The production `DATABASE_URL` points to Neon PostgreSQL. After the image is pushed
+to ECR, the EC2 deployment script runs `medusa db:migrate` inside the new image
+before replacing the running container. A failed migration stops the rollout and
+leaves the previous container running.
+
+```bash
+npm exec medusa db:migrate
+```
+
+### Notifications (Resend)
+
+When `RESEND_API_KEY` is configured, the backend uses Resend for transactional email
+notifications. Do not commit the API key; configure it in the EC2 environment.
 
 ## Configuration
 
@@ -143,8 +162,8 @@ MIT — see [LICENSE](LICENSE).
 
 ```text
 ┌─────────────┐     ┌──────────────────────────┐     ┌─────────────────┐
-│  Vercel     │     │  AWS EC2 (Docker)        │     │  AWS Services   │
-│  商城       │────▶│  Medusa 后端 :9000       │────▶│  PostgreSQL     │
+│  Vercel     │     │  AWS EC2 (Docker)        │     │  Neon · AWS     │
+│  商城       │────▶│  Medusa 后端 :9000       │────▶│  Neon PostgreSQL │
 │  Next.js 15 │HTTPS│  + Redis                 │     │  Redis          │
 │             │     │  (docker-compose)        │     │  S3 · SES       │
 └─────────────┘     └──────────────────────────┘     └─────────────────┘
@@ -197,11 +216,22 @@ npm run backend:seed
 2. 通过 buildx 构建 `linux/arm64` Docker 镜像并推送至 **Amazon ECR**（`:SHA` 与 `:latest`）
 3. 通过 **SSM Run Command** 异步在 EC2 上拉取镜像并用 `docker compose` 重建 `medusa` 容器
 
-基础设施位于 [`deploy/`](deploy): `docker-compose.yml`（postgres、redis、medusa）、`deploy.sh`（拉取并重建）、`bootstrap-env.sh`（一次性环境初始化）。
+基础设施位于 [`deploy/`](deploy)：`docker-compose.yml`（redis、medusa）、`deploy.sh`（拉取、迁移并重建）、`bootstrap-env.sh`（一次性环境初始化）。
 
 ### 商城 (Vercel)
 
 推送 `main` 分支即自动部署商城到 Vercel（根目录 `apps/storefront`）。
+
+### 数据库 (Neon)
+
+生产环境的 `DATABASE_URL` 指向 Neon PostgreSQL。镜像推送到 ECR 后，EC2 上的
+部署脚本会在替换线上容器前，使用新镜像执行 `medusa db:migrate`。迁移失败会
+中止发布并保留旧容器。
+
+### 通知 (Resend)
+
+配置 `RESEND_API_KEY` 后，后端使用 Resend 发送事务邮件。API key 只配置在
+EC2 环境中，不要提交到 Git。
 
 ## 配置
 

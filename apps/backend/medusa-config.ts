@@ -77,6 +77,9 @@ const modules = {
         },
       }
     : {}),
+  creatorProfile: {
+    resolve: path.join(projectDir, "src/modules/creator-profile"),
+  },
 }
 
 const databaseDriverOptions = process.env.DATABASE_DRIVER_OPTIONS
