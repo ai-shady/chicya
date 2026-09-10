@@ -22,8 +22,9 @@ import {
   linkSalesChannelsToApiKeyWorkflow,
   linkSalesChannelsToStockLocationWorkflow,
 } from "@medusajs/medusa/core-flows";
-import CreatorProfileModuleService from "../modules/creator-profile/service";
-import { CREATOR_PROFILE_MODULE } from "../modules/creator-profile";
+import type CreatorProfileModuleService from "../modules/creator-profile/service";
+
+const CREATOR_PROFILE_MODULE = "creatorProfile";
 
 export default async function initial_data_seed({
   container,

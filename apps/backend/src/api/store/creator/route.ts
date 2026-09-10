@@ -1,7 +1,8 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 
-import CreatorProfileModuleService from "../../../modules/creator-profile/service"
-import { CREATOR_PROFILE_MODULE } from "../../../modules/creator-profile"
+import type CreatorProfileModuleService from "../../../modules/creator-profile/service"
+
+const CREATOR_PROFILE_MODULE = "creatorProfile"
 
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
   const service = req.scope.resolve(CREATOR_PROFILE_MODULE) as CreatorProfileModuleService
